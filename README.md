@@ -2,9 +2,9 @@
 Chess game with server
 
 Tasks:
-- [] Create github
-- [] Create local repo
-- [] Create IntelliJ proj
+- [x] Create github
+- [x] Create local repo
+- [x] Create IntelliJ proj
 - [] Load started code
 - [] Make sure tests run
 - [] ...
