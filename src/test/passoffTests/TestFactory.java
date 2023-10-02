@@ -19,7 +19,15 @@ public class TestFactory {
     }
 
     public static ChessPiece getNewPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type){
-		return new ChessPieceImpl(type, pieceColor);
+
+        return switch (type) {
+            case PAWN -> new Pawn(pieceColor);
+            case ROOK -> new Rook(pieceColor);
+            case KNIGHT -> new Knight(pieceColor);
+            case QUEEN -> new Queen(pieceColor);
+            case KING -> new King(pieceColor);
+            case BISHOP -> new Bishop(pieceColor);
+        };
     }
 
     public static ChessPosition getNewPosition(Integer row, Integer col){
@@ -27,8 +35,7 @@ public class TestFactory {
     }
 
     public static ChessMove getNewMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece){
-        // FIXME
-		return null;
+		return new ChessMoveImpl(startPosition, endPosition, promotionPiece);
     }
     //------------------------------------------------------------------------------------------------------------------
 

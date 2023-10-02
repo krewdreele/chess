@@ -2,23 +2,20 @@ package chess;
 
 import java.util.Collection;
 
-public class ChessPieceImpl implements ChessPiece{
-
-    private PieceType type;
-    private ChessGame.TeamColor color;
-
-    public ChessPieceImpl(PieceType type, ChessGame.TeamColor color){
-        this.type = type;
-        this.color = color;
+public class King implements ChessPiece{
+    private final ChessGame.TeamColor color;
+    public King(ChessGame.TeamColor pieceColor) {
+        color = pieceColor;
     }
+
     @Override
     public ChessGame.TeamColor getTeamColor() {
-        return null;
+        return color;
     }
 
     @Override
     public PieceType getPieceType() {
-        return type;
+        return PieceType.KING;
     }
 
     @Override

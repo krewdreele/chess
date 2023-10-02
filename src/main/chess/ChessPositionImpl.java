@@ -1,8 +1,8 @@
 package chess;
 
 public class ChessPositionImpl implements ChessPosition{
-    private int row;
-    private int column;
+    private final int row;
+    private final int column;
     public ChessPositionImpl(int row, int column){
         this.row = row;
         this.column = column;
@@ -15,5 +15,12 @@ public class ChessPositionImpl implements ChessPosition{
     @Override
     public int getColumn() {
         return column;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if(other == null) return false;
+        if(other.getClass() != this.getClass()) return false;
+        return ((ChessPositionImpl) other).getRow() == getRow() && ((ChessPositionImpl) other).getColumn() == getColumn();
     }
 }
