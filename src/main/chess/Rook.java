@@ -1,8 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-public class Rook implements ChessPiece{
+public class Rook extends ChessPieceImpl implements ChessPiece{
     private final ChessGame.TeamColor color;
     public Rook(ChessGame.TeamColor pieceColor) {
         this.color = pieceColor;
@@ -20,6 +21,8 @@ public class Rook implements ChessPiece{
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return null;
+        ArrayList<ChessMove> moves = new ArrayList<>();
+        super.addVertHorizMoves(board, myPosition, moves, color, false);
+        return moves;
     }
 }

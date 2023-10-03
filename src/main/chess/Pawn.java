@@ -24,29 +24,31 @@ public class Pawn implements ChessPiece{
         ArrayList<ChessMove> moves = new ArrayList<>();
 
         if(color == ChessGame.TeamColor.WHITE){
-            //move 2
-            if(myPosition.getRow() == 2) {
-                ChessPosition newPosition = new ChessPositionImpl(myPosition.getRow() + 2, myPosition.getColumn());
-                if (board.getPiece(newPosition) == null) {
-                    moves.add(new ChessMoveImpl(myPosition, newPosition, null));
-                }
-            }
             //move 1
             ChessPosition newPosition = new ChessPositionImpl(myPosition.getRow() + 1, myPosition.getColumn());
             if(board.getPiece(newPosition) == null) moves.add(new ChessMoveImpl(myPosition, newPosition, null));
+            //move 2
+            if(myPosition.getRow() == 2) {
+                ChessPosition newPosition2 = new ChessPositionImpl(myPosition.getRow() + 2, myPosition.getColumn());
+                if (board.getPiece(newPosition2) == null) {
+                    moves.add(new ChessMoveImpl(myPosition, newPosition2, null));
+                }
+            }
         }
 
         if(color == ChessGame.TeamColor.BLACK){
-            //move 2
-            if(myPosition.getRow() == 7) {
-                ChessPosition newPosition = new ChessPositionImpl(myPosition.getRow() - 2, myPosition.getColumn());
-                if (board.getPiece(newPosition) == null) {
-                    moves.add(new ChessMoveImpl(myPosition, newPosition, null));
-                }
-            }
             //move 1
             ChessPosition newPosition = new ChessPositionImpl(myPosition.getRow() - 1, myPosition.getColumn());
-            if(board.getPiece(newPosition) == null) moves.add(new ChessMoveImpl(myPosition, newPosition, null));
+            if(board.getPiece(newPosition) == null) {
+                moves.add(new ChessMoveImpl(myPosition, newPosition, null));
+                //move 2
+                if (myPosition.getRow() == 7) {
+                    ChessPosition newPosition2 = new ChessPositionImpl(myPosition.getRow() - 2, myPosition.getColumn());
+                    if (board.getPiece(newPosition2) == null) {
+                        moves.add(new ChessMoveImpl(myPosition, newPosition2, null));
+                    }
+                }
+            }
         }
 
 

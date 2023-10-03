@@ -1,8 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-public class Queen implements ChessPiece{
+public class Queen extends ChessPieceImpl implements ChessPiece{
     private final ChessGame.TeamColor color;
     public Queen(ChessGame.TeamColor pieceColor) {
         color = pieceColor;
@@ -20,6 +21,9 @@ public class Queen implements ChessPiece{
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return null;
+        ArrayList<ChessMove> moves = new ArrayList<>();
+        super.addDiagonalMoves(board, myPosition, moves, color, false);
+        super.addVertHorizMoves(board, myPosition, moves, color, false);
+        return moves;
     }
 }

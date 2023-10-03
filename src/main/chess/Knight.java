@@ -1,8 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-public class Knight implements ChessPiece{
+public class Knight extends ChessPieceImpl implements ChessPiece{
     private final ChessGame.TeamColor color;
     public Knight(ChessGame.TeamColor pieceColor) {
         color = pieceColor;
@@ -20,6 +21,15 @@ public class Knight implements ChessPiece{
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return null;
+        ArrayList<ChessMove> moves = new ArrayList<>();
+        super.addMove(myPosition.getRow() - 2, myPosition.getColumn() - 1, board, myPosition, moves, color);
+        super.addMove(myPosition.getRow() - 2, myPosition.getColumn() + 1, board, myPosition, moves, color);
+        super.addMove(myPosition.getRow() - 1, myPosition.getColumn() + 2, board, myPosition, moves, color);
+        super.addMove(myPosition.getRow() - 1, myPosition.getColumn() - 2, board, myPosition, moves, color);
+        super.addMove(myPosition.getRow() + 1, myPosition.getColumn() + 2, board, myPosition, moves, color);
+        super.addMove(myPosition.getRow() + 1, myPosition.getColumn() - 2, board, myPosition, moves, color);
+        super.addMove(myPosition.getRow() + 2, myPosition.getColumn() - 1, board, myPosition, moves, color);
+        super.addMove(myPosition.getRow() + 2, myPosition.getColumn() + 1, board, myPosition, moves, color);
+        return moves;
     }
 }
