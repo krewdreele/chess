@@ -7,6 +7,17 @@ public class ChessBoardImpl implements ChessBoard {
     public ChessBoardImpl(){
         pieces = new ChessPiece[8][8];
     }
+
+    public ChessBoardImpl(ChessBoardImpl other){
+        pieces = new ChessPiece[8][8];
+        for(int i=1; i<=8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition position = new ChessPositionImpl(i, j);
+                ChessPiece piece = other.getPiece(position);
+                addPiece(position, piece);
+            }
+        }
+    }
     @Override
     public void addPiece(ChessPosition position, ChessPiece piece) {
         pieces[position.getRow()-1][position.getColumn()-1] = piece;
@@ -22,6 +33,14 @@ public class ChessBoardImpl implements ChessBoard {
         pieces = new ChessPiece[8][8];
         resetWhitePieces();
         resetBlackPieces();
+    }
+
+    public void movePiece(ChessMove move){
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece piece = getPiece(move.getStartPosition());
+        pieces[start.getRow()-1][start.getColumn() - 1] = null;
+        pieces[end.getRow() - 1][end.getColumn() - 1] = piece;
     }
 
     private void resetWhitePieces(){

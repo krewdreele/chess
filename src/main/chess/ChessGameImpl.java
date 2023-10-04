@@ -5,7 +5,7 @@ import java.util.Collection;
 
 public class ChessGameImpl implements ChessGame{
 
-    private ChessBoard board;
+    private ChessBoardImpl board;
     private TeamColor turn;
     public ChessGameImpl(){
         turn = TeamColor.WHITE;
@@ -27,44 +27,32 @@ public class ChessGameImpl implements ChessGame{
             return null;
         }
         ArrayList<ChessMove> moves = new ArrayList<>(piece.pieceMoves(board, startPosition));
-        for(ChessMove move : moves){
-            TeamColor color = board.getPiece(move.getStartPosition()).getTeamColor();
-            if(invalidMove(move, color)){
-                moves.remove(move);
-            }
-        }
+        moves.removeIf(this::invalidMove);
         return moves;
     }
 
     @Override
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        TeamColor color = board.getPiece(move.getStartPosition()).getTeamColor();
-        if(color != turn){
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        if(piece.getTeamColor() != turn){
             throw new InvalidMoveException("It is not your turn dummy!");
         }
-        else if(invalidMove(move, color)){
+        else if(invalidMove(move)){
             throw new InvalidMoveException("Move leaves King in check!");
         }
         else{
-            move(move, null);
+            board.movePiece(move);
             changeTurns();
         }
     }
 
-    private boolean invalidMove(ChessMove move, TeamColor color) {
+    private boolean invalidMove(ChessMove move) {
         boolean invalid;
-        ChessPiece takenPiece = board.getPiece(move.getEndPosition());
-        ChessMove undo = new ChessMoveImpl(move.getEndPosition(), move.getStartPosition(), null);
-        move(move, null);
-        invalid = isInCheck(color);
-        move(undo, takenPiece);
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        ChessBoardImpl copyBoard = new ChessBoardImpl(board);
+        copyBoard.movePiece(move);
+        invalid = isInCheck(piece.getTeamColor());
         return invalid;
-    }
-
-    private void move(ChessMove move, ChessPiece replace){
-        ChessPiece start = board.getPiece(move.getStartPosition());
-        board.addPiece(move.getEndPosition(), start);
-        board.addPiece(move.getStartPosition(), replace);
     }
 
     private void changeTurns(){
@@ -117,7 +105,7 @@ public class ChessGameImpl implements ChessGame{
 
     @Override
     public void setBoard(ChessBoard board) {
-        this.board = board;
+        this.board = (ChessBoardImpl) board;
     }
 
     @Override
