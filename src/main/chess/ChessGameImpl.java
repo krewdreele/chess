@@ -113,6 +113,11 @@ public class ChessGameImpl implements ChessGame{
 
     @Override
     public boolean isInCheckmate(TeamColor teamColor) {
+        ArrayList<ChessMove> allMoves = getAllValidMoves(teamColor);
+        return allMoves.isEmpty();
+    }
+
+    private ArrayList<ChessMove> getAllValidMoves(TeamColor teamColor){
         ArrayList<ChessMove> moves = new ArrayList<>();
         for(int i=1; i<=8; i++) {
             for (int j = 1; j <= 8; j++) {
@@ -123,12 +128,14 @@ public class ChessGameImpl implements ChessGame{
                 }
             }
         }
-        return moves.isEmpty();
+        return moves;
     }
 
     @Override
     public boolean isInStalemate(TeamColor teamColor) {
-        return false;
+        if(turn != teamColor) return false;
+        ArrayList<ChessMove> allMoves = getAllValidMoves(teamColor);
+        return allMoves.isEmpty();
     }
 
     @Override
