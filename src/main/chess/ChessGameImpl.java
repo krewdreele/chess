@@ -47,12 +47,19 @@ public class ChessGameImpl implements ChessGame{
     }
 
     private boolean invalidMove(ChessMove move) {
-        boolean invalid;
+        //is it part of the pieces available moves?
         ChessPiece piece = board.getPiece(move.getStartPosition());
+        if(!piece.pieceMoves(board, move.getStartPosition()).contains(move)){
+            return true;
+        }
+        //will this move put our king in check?
+        //copy our current board state
         ChessBoardImpl copyBoard = new ChessBoardImpl(board);
-        copyBoard.movePiece(move);
-        invalid = isInCheck(piece.getTeamColor());
-        return invalid;
+        board.movePiece(move);
+        boolean inCheck = isInCheck(piece.getTeamColor());
+        //reset board state
+        setBoard(copyBoard);
+        return inCheck;
     }
 
     private void changeTurns(){
@@ -85,7 +92,7 @@ public class ChessGameImpl implements ChessGame{
         }
 
         for(ChessMove move : possibleMoves){
-            if(move.getEndPosition() == kingPosition){
+            if(move.getEndPosition().equals(kingPosition)){
                 return true;
             }
         }

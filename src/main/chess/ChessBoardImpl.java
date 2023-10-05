@@ -39,7 +39,17 @@ public class ChessBoardImpl implements ChessBoard {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece piece = getPiece(move.getStartPosition());
-        pieces[start.getRow()-1][start.getColumn() - 1] = null;
+
+        if(move.getPromotionPiece() != null){
+            piece = switch (move.getPromotionPiece()){
+                case ROOK -> new Rook(piece.getTeamColor());
+                case KNIGHT -> new Knight(piece.getTeamColor());
+                case QUEEN -> new Queen(piece.getTeamColor());
+                case BISHOP -> new Bishop(piece.getTeamColor());
+                default -> throw new IllegalStateException("Promotion type cannot be of type: " + move.getPromotionPiece());
+            };
+        }
+        pieces[start.getRow() - 1][start.getColumn() - 1] = null;
         pieces[end.getRow() - 1][end.getColumn() - 1] = piece;
     }
 

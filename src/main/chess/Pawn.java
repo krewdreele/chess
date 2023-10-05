@@ -71,6 +71,9 @@ public class Pawn implements ChessPiece{
     }
 
     private boolean canTakePiece(ChessBoard board, ChessPosition newPosition){
+        if(newPosition.getRow() > 8 || newPosition.getRow() < 1 || newPosition.getColumn() > 8 || newPosition.getColumn() < 1){
+            return false;
+        }
        return (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() != color);
     }
 }
