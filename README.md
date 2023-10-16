@@ -1,5 +1,5 @@
 # chess
-Chess game with server
+Chess game with models
 
 Tasks:
 - [x] Create github
