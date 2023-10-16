@@ -1,6 +1,7 @@
 package services;
 
-import models.AuthToken;
+import models.Request;
+import models.Response;
 import models.UserData;
 
 /**
@@ -12,8 +13,8 @@ public class LoginService {
      * Finds user in the database
      * Inserts new auth token in the database
      * Sets the auth token data object's message
-     * @param user - the user wishing to log in
+     * @param r - the request object containing the user info
      * @return - the authentication token object
      */
-    public AuthToken login(UserData user){return null;}
+    public Response login(Request r){return null;}
 }

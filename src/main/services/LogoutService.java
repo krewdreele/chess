@@ -1,6 +1,7 @@
 package services;
 
-import models.AuthToken;
+import models.Response;
+import models.Request;
 
 /**
  * Service for logging a user out
@@ -10,8 +11,8 @@ public class LogoutService {
     /**
      * Find / authenticate user in the database
      * Remove their authentication
-     * @param token - the auth token to be removed
+     * @param r - the auth token to be removed inside request obj
      * @return the response message
      */
-    public String logout(AuthToken token){return "";}
+    public Response logout(Request r){return null;}
 }

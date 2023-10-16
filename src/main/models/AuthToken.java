@@ -5,22 +5,12 @@ package models;
  * Holds the response message (if necessary)
  */
 public class AuthToken {
-    private String message;
     private String authToken;
     private String username;
 
     public AuthToken(String authToken, String username) {
         this.authToken = authToken;
         this.username = username;
-        this.message = "";
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getAuthToken() {

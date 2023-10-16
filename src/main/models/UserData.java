@@ -4,7 +4,6 @@ package models;
  * Holds all the data for one user and response message (if necessary)
  */
 public class UserData {
-    private String message;
     private String username;
     private String password;
     private String email;
@@ -13,15 +12,6 @@ public class UserData {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.message = "";
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getUsername() {

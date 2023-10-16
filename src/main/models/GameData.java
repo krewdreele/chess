@@ -6,7 +6,6 @@ import chess.ChessGame;
  * Holds all the game data and response message (if necessary)
  */
 public class GameData{
-    private String message;
     private int gameID;
     private String whiteUsername;
     private String blackUsername;
@@ -17,15 +16,6 @@ public class GameData{
         this.gameID = gameID;
         this.gameName = gameName;
         this.game = game;
-        this.message = "";
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public int getGameID() {

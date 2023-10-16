@@ -1,7 +1,7 @@
 package services;
 
-import models.AuthToken;
-import models.GameData;
+import models.Response;
+import models.Request;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ public class ListGamesService {
      * Authenticate the token
      * Find and return a list of all games in the database
      * First item in list will always be the response message
-     * @param token - the user's authentication token
+     * @param r - the user's authentication token in request obj
      * @return a list of all games in the database
      */
-    public List<Object> listGames(AuthToken token){return null;}
+    public Response listGames(Request r){return null;}
 }
