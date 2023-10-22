@@ -21,5 +21,10 @@ public interface AuthTokenAccess {
      * @return the authentication token
      * @throws DataAccessException - bad request, unauthorized, server error
      */
-    AuthToken find(String username) throws DataAccessException;
+    String find(String username) throws DataAccessException;
+
+    /**
+     * clears all tokens from the database
+     */
+    void clear();
 }

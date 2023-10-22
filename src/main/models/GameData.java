@@ -6,24 +6,22 @@ import chess.ChessGame;
  * Holds all the game data and response message (if necessary)
  */
 public class GameData{
-    private int gameID;
+    private final int gameID;
     private String whiteUsername;
     private String blackUsername;
-    private String gameName;
+    private final String gameName;
     private ChessGame game;
 
     public GameData(int gameID, String gameName, ChessGame game) {
         this.gameID = gameID;
         this.gameName = gameName;
         this.game = game;
+        whiteUsername = "";
+        blackUsername = "";
     }
 
     public int getGameID() {
         return gameID;
-    }
-
-    public void setGameID(int gameID) {
-        this.gameID = gameID;
     }
 
     public String getWhiteUsername() {
@@ -44,10 +42,6 @@ public class GameData{
 
     public String getGameName() {
         return gameName;
-    }
-
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
     }
 
     public ChessGame getGame() {

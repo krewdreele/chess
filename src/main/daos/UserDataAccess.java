@@ -1,10 +1,7 @@
 package daos;
 
 import dataAccess.DataAccessException;
-import models.GameData;
 import models.UserData;
-
-import java.util.List;
 
 /**
  * A basic structure for a user data access object (can be implemented with a RAM or database class)
@@ -24,6 +21,11 @@ public interface UserDataAccess {
      * @return the user data object
      * @throws DataAccessException - user cannot be found, not authorized
      */
-    UserData findUser(String username) throws DataAccessException;
+    UserData find(String username) throws DataAccessException;
+
+    /**
+     * clears all users from the database
+     */
+    void clear();
 
 }

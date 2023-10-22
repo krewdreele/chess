@@ -48,7 +48,7 @@ public interface GameDataAccess {
      * @param newGame - the new game
      * @throws DataAccessException - bad request, unauthorized, server error
      */
-    void updateGame(int gameID, ChessGame newGame) throws DataAccessException;
+    void updateGame(int gameID, GameData newGame) throws DataAccessException;
 
     /**
      * Removes a game from the database
@@ -56,4 +56,9 @@ public interface GameDataAccess {
      * @throws DataAccessException - bad request, unauthorized, server error
      */
     void remove(int gameID) throws DataAccessException;
+
+    /**
+     * clears all games from the database
+     */
+    void clear();
 }
