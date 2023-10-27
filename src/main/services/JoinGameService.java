@@ -16,15 +16,10 @@ public class JoinGameService {
      * @param r - the request obj containing the necessary info
      * @return the response obj with message
      */
-    public Response joinGame(Request r){
+    public Response joinGame(Request r) throws DataAccessException{
         Response response = new Response();
-        try{
-            var username = DataAccess.getInstance().getAuthAccess().find(r.getAuthToken());
-            DataAccess.getInstance().getGameAccess().claimSpot(r.getGameID(), username, r.getPlayerColor());
-        }
-        catch (DataAccessException e){
-            response.setMessage(e.getMessage());
-        }
+        var username = DataAccess.getInstance().getAuthAccess().find(r.getAuthToken());
+        DataAccess.getInstance().getGameAccess().claimSpot(r.getGameID(), username, r.getPlayerColor());
         return response;
     }
 }

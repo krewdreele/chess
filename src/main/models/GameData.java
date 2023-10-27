@@ -20,8 +20,6 @@ public class GameData{
         this.gameID = gameID;
         this.gameName = gameName;
         this.game = game;
-        whiteUsername = "";
-        blackUsername = "";
         observers = new ArrayList<>();
     }
 
@@ -43,10 +41,6 @@ public class GameData{
 
     public void setBlackUsername(String blackUsername) {
         this.blackUsername = blackUsername;
-    }
-
-    public String getGameName() {
-        return gameName;
     }
 
     public ChessGame getGame() {

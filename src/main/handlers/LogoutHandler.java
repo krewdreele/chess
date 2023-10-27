@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import services.LogoutService;
 import spark.Request;
 
@@ -14,7 +15,7 @@ public class LogoutHandler {
      * Calls the 'logout' service
      * @param request - the http request
      */
-    public static String logoutRequest(Request request){
+    public static String logoutRequest(Request request) throws DataAccessException {
         Gson gson = new Gson();
         var logoutRequest = new models.Request();
         var authToken = request.headers("authorization");

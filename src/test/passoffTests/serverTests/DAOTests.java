@@ -35,7 +35,17 @@ public class DAOTests {
 
         assertThrows(DataAccessException.class, () -> db.find("bob"));
         db.insert(token);
-        assert (db.find("bob").equals("1234"));
+        assert (db.find("1234").equals("bob"));
+    }
+
+    @Test
+    public void deleteAuthToken() throws DataAccessException{
+        MemAuthDAO db = new MemAuthDAO();
+        AuthToken token = new AuthToken("1234", "bob");
+        assertThrows(DataAccessException.class, () -> db.delete(token.getAuthToken()));
+        db.insert(token);
+        db.delete(token.getAuthToken());
+        assertThrows(DataAccessException.class, () -> db.find(token.getAuthToken()));
     }
 
     @Test

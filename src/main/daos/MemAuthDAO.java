@@ -54,7 +54,8 @@ public class MemAuthDAO implements AuthTokenAccess{
     }
 
     @Override
-    public void delete(String username) throws DataAccessException {
-        tokens.remove(username);
+    public void delete(String token) throws DataAccessException {
+        find(token);
+        tokens.remove(token);
     }
 }

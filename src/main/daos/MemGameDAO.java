@@ -77,7 +77,7 @@ public class MemGameDAO implements GameDataAccess{
         }
 
         if(color == ChessGame.TeamColor.WHITE){
-            if(game.getWhiteUsername().isEmpty()) {
+            if(game.getWhiteUsername() == null) {
                 game.setWhiteUsername(username);
             }
             else{
@@ -85,7 +85,7 @@ public class MemGameDAO implements GameDataAccess{
             }
         }
         else if(color == ChessGame.TeamColor.BLACK){
-            if(game.getBlackUsername().isEmpty()) {
+            if(game.getBlackUsername() == null) {
                 game.setBlackUsername(username);
             }
             else{

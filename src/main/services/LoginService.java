@@ -21,22 +21,17 @@ public class LoginService{
      * @param r - the request object containing the user info
      * @return - the response object
      */
-    public Response login(Request r){
+    public Response login(Request r) throws DataAccessException{
         Response response = new Response();
-        try {
-            UserData user = DataAccess.getInstance().getUserAccess().find(r.getUsername());
-            if (!user.getPassword().equals(r.getPassword())) {
-                throw new DataAccessException("401: unauthorized");
-            }
-            AuthToken newToken = new AuthToken(UUID.randomUUID().toString(), user.getUsername());
-            DataAccess.getInstance().getAuthAccess().insert(newToken);
-            var token = newToken.getAuthToken();
-            response.setUsername(r.getUsername());
-            response.setToken(token);
+        UserData user = DataAccess.getInstance().getUserAccess().find(r.getUsername());
+        if (!user.getPassword().equals(r.getPassword())) {
+            throw new DataAccessException("401: unauthorized");
         }
-        catch (DataAccessException e){
-            response.setMessage(e.getMessage());
-        }
+        AuthToken newToken = new AuthToken(UUID.randomUUID().toString(), user.getUsername());
+        DataAccess.getInstance().getAuthAccess().insert(newToken);
+        var token = newToken.getAuthToken();
+        response.setUsername(r.getUsername());
+        response.setToken(token);
         return response;
     }
 }

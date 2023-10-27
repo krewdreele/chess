@@ -9,8 +9,8 @@ public class Response {
     private String message;
     private String username;
     private String gameID;
-    private String token;
-    private List<GameData> gameList;
+    private String authToken;
+    private List<GameData> games;
 
     public Response() {
     }
@@ -39,14 +39,14 @@ public class Response {
     }
 
     public String getToken() {
-        return token;
+        return authToken;
     }
 
     public void setToken(String token) {
-        this.token = token;
+        this.authToken = token;
     }
 
     public void setGameList(List<GameData> gameList) {
-        this.gameList = gameList;
+        this.games = gameList;
     }
 }

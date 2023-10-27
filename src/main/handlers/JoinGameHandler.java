@@ -1,10 +1,9 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import services.JoinGameService;
 import spark.Request;
-
-import java.net.http.HttpRequest;
 
 /**
  * Handles the http conversion for joining a game and connects to the corresponding service
@@ -16,7 +15,7 @@ public class JoinGameHandler {
      * Calls the 'join game' service
      * @param request - the http request
      */
-    public static String JoinGameRequest(Request request){
+    public static String JoinGameRequest(Request request) throws DataAccessException {
         Gson gson = new Gson();
         var authToken = request.headers("authorization");
         var joinRequest = gson.fromJson(request.body(), models.Request.class);

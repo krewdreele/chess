@@ -25,7 +25,7 @@ public class MemUserDAO implements UserDataAccess{
         if(user == null){
             throw new DataAccessException("400: bad request");
         }
-        if(find(user.getUsername()) != null){
+        if(users.get(user.getUsername()) != null){
             throw new DataAccessException("403: already taken");
         }
         users.put(user.getUsername(), user);
@@ -43,7 +43,11 @@ public class MemUserDAO implements UserDataAccess{
         if(username == null){
             throw new DataAccessException("400: bad request");
         }
-        return users.get(username);
+        var user = users.get(username);
+        if(user == null){
+            throw new DataAccessException("401: unauthorized");
+        }
+        return user;
     }
 
     /**

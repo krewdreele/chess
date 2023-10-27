@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import models.Response;
 import services.CreateGameService;
 import spark.Request;
@@ -16,7 +17,7 @@ public class CreateGameHandler {
      * Calls the 'create game' service
      * @param request - the http request
      */
-    public static String createGameRequest(Request request){
+    public static String createGameRequest(Request request) throws DataAccessException {
         Gson gson = new Gson();
         var authToken = request.headers("authorization");
         var gameRequest = gson.fromJson(request.body(), models.Request.class);
