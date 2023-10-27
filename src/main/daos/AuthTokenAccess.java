@@ -16,15 +16,16 @@ public interface AuthTokenAccess {
     void insert(AuthToken token) throws DataAccessException;
 
     /**
-     * Find the authentication token associated with a user
-     * @param username - the username of the user
-     * @return the authentication token
-     * @throws DataAccessException - bad request, unauthorized, server error
+     * Find the username associated with the token
+     * @param token - the token being looked up
+     * @return the user
      */
-    String find(String username) throws DataAccessException;
+    String find(String token) throws DataAccessException;
 
     /**
      * clears all tokens from the database
      */
     void clear();
+
+    void delete(String token) throws DataAccessException;
 }

@@ -9,7 +9,6 @@ import java.util.HashMap;
  * RAM implementation for the user data access
  */
 public class MemUserDAO implements UserDataAccess{
-
     private final HashMap<String, UserData> users;
 
     public MemUserDAO(){
@@ -26,6 +25,9 @@ public class MemUserDAO implements UserDataAccess{
         if(user == null){
             throw new DataAccessException("400: bad request");
         }
+        if(find(user.getUsername()) != null){
+            throw new DataAccessException("403: already taken");
+        }
         users.put(user.getUsername(), user);
     }
 
@@ -38,11 +40,10 @@ public class MemUserDAO implements UserDataAccess{
      */
     @Override
     public UserData find(String username) throws DataAccessException {
-        UserData user = users.get(username);
-        if(user == null){
+        if(username == null){
             throw new DataAccessException("400: bad request");
         }
-        return user;
+        return users.get(username);
     }
 
     /**

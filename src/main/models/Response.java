@@ -6,33 +6,44 @@ import java.util.List;
  * Holds information about the response from the server
  */
 public class Response {
-    public String message;
-    private GameData game;
-    private AuthToken token;
+    private String message;
+    private String username;
+    private String gameID;
+    private String token;
     private List<GameData> gameList;
 
-    public Response(String message) {
+    public Response() {
+    }
+
+    public String getMessage() {
+        return message;
+    }
+    public void setMessage(String message) {
         this.message = message;
     }
 
-    public GameData getGame() {
-        return game;
+    public String getUsername() {
+        return username;
     }
 
-    public void setGame(GameData game) {
-        this.game = game;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public AuthToken getToken() {
+    public String getGameID() {
+        return gameID;
+    }
+
+    public void setGameID(String gameID) {
+        this.gameID = gameID;
+    }
+
+    public String getToken() {
         return token;
     }
 
-    public void setToken(AuthToken token) {
+    public void setToken(String token) {
         this.token = token;
-    }
-
-    public List<GameData> getGameList() {
-        return gameList;
     }
 
     public void setGameList(List<GameData> gameList) {

@@ -92,6 +92,9 @@ public class MemGameDAO implements GameDataAccess{
                 throw new DataAccessException("403: already taken");
             }
         }
+        else{
+            game.addObserver(username);
+        }
     }
 
     /**

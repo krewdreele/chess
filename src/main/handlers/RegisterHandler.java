@@ -1,8 +1,7 @@
 package handlers;
-import models.AuthToken;
-import models.UserData;
-
-import java.net.http.HttpRequest;
+import com.google.gson.Gson;
+import services.RegisterService;
+import spark.Request;
 
 /**
  * handles the http conversion for registering a new user and connects to the corresponding service
@@ -14,5 +13,12 @@ public class RegisterHandler {
      * Call the 'register user' service
      * @param request - the http request to be converted
      */
-    public void registerRequest(HttpRequest request){}
+    public static String registerRequest(Request request){
+        Gson gson = new Gson();
+        var registerRequest = gson.fromJson(String.valueOf(request.body()), models.Request.class);
+        var service = new RegisterService();
+        var response = service.register(registerRequest);
+
+        return gson.toJson(response);
+    }
 }

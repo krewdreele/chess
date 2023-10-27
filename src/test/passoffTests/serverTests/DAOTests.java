@@ -114,7 +114,7 @@ public class DAOTests {
         AuthToken token = new AuthToken("123", "bob");
         db.insert(token);
         db.clear();
-        assertThrows(DataAccessException.class, () -> db.find("123"));
+        assertThrows(DataAccessException.class, () -> db.find("bob"));
     }
 
     @Test

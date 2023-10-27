@@ -25,30 +25,36 @@ public class MemAuthDAO implements AuthTokenAccess{
         if(token == null){
             throw new DataAccessException("400: bad request");
         }
-        tokens.put(token.getUsername(), token.getAuthToken());
+        tokens.put(token.getAuthToken(), token.getUsername());
     }
 
     /**
-     * Find the authentication token associated with a user
+     * Find the user associated with the token
      *
-     * @param username - the username of the user
-     * @return the authentication token
-     * @throws DataAccessException - bad request, unauthorized, server error
+     * @param token - the token looking for
+     * @return the user
      */
     @Override
-    public String find(String username) throws DataAccessException {
-        String token = tokens.get(username);
+    public String find(String token) throws DataAccessException{
         if(token == null){
             throw new DataAccessException("400: bad request");
         }
-        return tokens.get(username);
+        String username = tokens.get(token);
+        if(username == null) {
+            throw new DataAccessException("401: unauthorized");
+        }
+        return username;
     }
-
     /**
      * clears all tokens from the database
      */
     @Override
     public void clear() {
         tokens.clear();
+    }
+
+    @Override
+    public void delete(String username) throws DataAccessException {
+        tokens.remove(username);
     }
 }

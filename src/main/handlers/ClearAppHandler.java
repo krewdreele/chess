@@ -1,5 +1,9 @@
 package handlers;
 
+import com.google.gson.Gson;
+import services.ClearAppService;
+import services.LoginService;
+
 import java.net.http.HttpRequest;
 
 /**
@@ -9,7 +13,12 @@ public class ClearAppHandler {
 
     /**
      * Calls the 'clear application' service
-     * @param request - the http request
      */
-    public void clearApplicationRequest(HttpRequest request){}
+    public static String clearApplicationRequest(){
+        Gson gson = new Gson();
+        ClearAppService service = new ClearAppService();
+        models.Response response = service.clearApplication();
+
+        return gson.toJson(response);
+    }
 }

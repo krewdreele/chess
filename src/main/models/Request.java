@@ -6,52 +6,60 @@ import chess.ChessGame;
  * Holds information about the request coming in depending on what kind of request
  */
 public class Request {
-    private AuthToken token;
-    private UserData user;
+    private String message;
+    private String username;
+    private String password;
+    private String authToken;
+    private String email;
     private String gameName;
-    private String gameID;
-    private ChessGame.TeamColor color;
+    private ChessGame.TeamColor playerColor;
+    private int gameID;
 
-    public Request() {
+    public String getMessage() {
+        return message;
     }
 
-    public AuthToken getToken() {
-        return token;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public void setToken(AuthToken token) {
-        this.token = token;
+    public String getUsername() {
+        return username;
     }
 
-    public UserData getUser() {
-        return user;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public void setUser(UserData user) {
-        this.user = user;
+    public String getPassword() {
+        return password;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getGameName() {
         return gameName;
     }
 
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
+    public ChessGame.TeamColor getPlayerColor() {
+        return playerColor;
     }
 
-    public String getGameID() {
+    public int getGameID() {
         return gameID;
     }
 
-    public void setGameID(String gameID) {
+    public void setGameID(int gameID) {
         this.gameID = gameID;
-    }
-
-    public ChessGame.TeamColor getColor() {
-        return color;
-    }
-
-    public void setColor(ChessGame.TeamColor color) {
-        this.color = color;
     }
 }

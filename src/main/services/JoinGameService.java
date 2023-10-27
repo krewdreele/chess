@@ -1,5 +1,7 @@
 package services;
 
+import daos.DataAccess;
+import dataAccess.DataAccessException;
 import models.Response;
 import models.Request;
 
@@ -14,5 +16,15 @@ public class JoinGameService {
      * @param r - the request obj containing the necessary info
      * @return the response obj with message
      */
-    public Response joinGame(Request r){return null;}
+    public Response joinGame(Request r){
+        Response response = new Response();
+        try{
+            var username = DataAccess.getInstance().getAuthAccess().find(r.getAuthToken());
+            DataAccess.getInstance().getGameAccess().claimSpot(r.getGameID(), username, r.getPlayerColor());
+        }
+        catch (DataAccessException e){
+            response.setMessage(e.getMessage());
+        }
+        return response;
+    }
 }
