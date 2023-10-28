@@ -51,8 +51,16 @@ public class Request {
         return gameName;
     }
 
+    public void setGameName(String name){
+        this.gameName = name;
+    }
+
     public ChessGame.TeamColor getPlayerColor() {
         return playerColor;
+    }
+
+    public void setPlayerColor(ChessGame.TeamColor color){
+        this.playerColor = color;
     }
 
     public int getGameID() {
@@ -61,5 +69,12 @@ public class Request {
 
     public void setGameID(int gameID) {
         this.gameID = gameID;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public void setEmail(String email){
+        this.email = email;
     }
 }

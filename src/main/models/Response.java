@@ -49,4 +49,8 @@ public class Response {
     public void setGameList(List<GameData> gameList) {
         this.games = gameList;
     }
+
+    public List<GameData> getGameList(){
+        return games;
+    }
 }

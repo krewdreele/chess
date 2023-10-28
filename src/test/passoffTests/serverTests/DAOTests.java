@@ -39,16 +39,6 @@ public class DAOTests {
     }
 
     @Test
-    public void deleteAuthToken() throws DataAccessException{
-        MemAuthDAO db = new MemAuthDAO();
-        AuthToken token = new AuthToken("1234", "bob");
-        assertThrows(DataAccessException.class, () -> db.delete(token.getAuthToken()));
-        db.insert(token);
-        db.delete(token.getAuthToken());
-        assertThrows(DataAccessException.class, () -> db.find(token.getAuthToken()));
-    }
-
-    @Test
     public void writeReadGame() throws DataAccessException{
         MemGameDAO db = new MemGameDAO();
         GameData game = new GameData(1234, "bob's game", new ChessGameImpl());
@@ -56,6 +46,21 @@ public class DAOTests {
         assertThrows(DataAccessException.class, () -> db.find(1234));
         db.insert(game);
         assert (db.find(1234) == game);
+    }
+
+    @Test
+    public void deleteAuthToken() throws DataAccessException{
+        MemAuthDAO db = new MemAuthDAO();
+        AuthToken token = new AuthToken("1234", "bob");
+        db.insert(token);
+        db.delete(token.getAuthToken());
+        assertThrows(DataAccessException.class, () -> db.find(token.getAuthToken()));
+    }
+
+    @Test
+    public void deleteAuthTokenFail(){
+        MemAuthDAO db = new MemAuthDAO();
+        assertThrows(DataAccessException.class, () -> db.delete("123"));
     }
 
     @Test

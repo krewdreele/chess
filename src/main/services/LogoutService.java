@@ -19,7 +19,6 @@ public class LogoutService {
     public Response logout(Request r) throws DataAccessException{
         Response response = new Response();
         DataAccess.getInstance().getAuthAccess().delete(r.getAuthToken());
-
         return response;
     }
 }
