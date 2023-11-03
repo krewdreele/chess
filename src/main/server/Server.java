@@ -16,7 +16,7 @@ import java.util.Map;
 public class Server {
 
     /**
-     * starts the server
+     * starts the server and database accessor
      */
     private DataAccess dataManager;
     public static void main(String[] args){
