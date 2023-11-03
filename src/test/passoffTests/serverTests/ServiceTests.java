@@ -6,6 +6,7 @@ import dataAccess.DataAccessException;
 import models.GameData;
 import models.Request;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import services.*;
@@ -15,7 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ServiceTests {
     private static String token;
     private static int gameID;
+    private static DataAccess dataManager;
 
+    @BeforeAll
+    public static void init() throws DataAccessException {
+        dataManager = new DataAccess();
+    }
     @BeforeEach
     public void setup() throws DataAccessException{
         var service = new RegisterService();
@@ -23,18 +29,18 @@ public class ServiceTests {
         req.setUsername("jerry");
         req.setPassword("jerry'spassword");
         req.setEmail("jerry@hotmail.com");
-        token = service.register(req).getToken();
+        token = service.register(req, dataManager).getToken();
 
         var gameService = new CreateGameService();
         var req2 = new Request();
         req2.setAuthToken(token);
         req2.setGameName("jerry's game");
-        gameID = Integer.parseInt(gameService.createGame(req2).getGameID());
+        gameID = Integer.parseInt(gameService.createGame(req2, dataManager).getGameID());
     }
 
     @AfterEach
-    public void reset(){
-        new ClearAppService().clearApplication();
+    public void reset() throws DataAccessException {
+        new ClearAppService().clearApplication(dataManager);
     }
     @Test
     public void registerService() throws DataAccessException{
@@ -44,8 +50,8 @@ public class ServiceTests {
         req.setEmail("bob@gmail.com");
 
         var service = new RegisterService();
-        service.register(req);
-        var user = DataAccess.getInstance().getUserAccess().find("bob");
+        service.register(req, dataManager);
+        var user = dataManager.getUserAccess().find("bob");
         assert(user != null);
     }
     @Test
@@ -55,22 +61,22 @@ public class ServiceTests {
         req.setEmail("bob@gmail.com");
 
         var service = new RegisterService();
-        assertThrows(DataAccessException.class, () -> service.register(req));
+        assertThrows(DataAccessException.class, () -> service.register(req, dataManager));
     }
     @Test
     public void logoutServiceFail(){
         var req = new Request();
         var service = new LogoutService();
         req.setAuthToken("wrongtoken");
-        assertThrows(DataAccessException.class, () -> service.logout(req));
+        assertThrows(DataAccessException.class, () -> service.logout(req, dataManager));
     }
     @Test
     public void logoutService() throws DataAccessException{
         var req = new Request();
         var service = new LogoutService();
         req.setAuthToken(token);
-        service.logout(req);
-        assertThrows(DataAccessException.class, () -> DataAccess.getInstance().getAuthAccess().find(token));
+        service.logout(req, dataManager);
+        assertThrows(DataAccessException.class, () -> dataManager.getAuthAccess().find(token));
     }
     @Test
     public void loginServiceFail(){
@@ -78,7 +84,7 @@ public class ServiceTests {
         var req = new Request();
         req.setUsername("jerry");
         req.setPassword("wrongpassword");
-        assertThrows(DataAccessException.class, () -> service.login(req));
+        assertThrows(DataAccessException.class, () -> service.login(req, dataManager));
     }
     @Test
     public void loginService() throws DataAccessException{
@@ -86,7 +92,7 @@ public class ServiceTests {
         var req = new Request();
         req.setUsername("jerry");
         req.setPassword("jerry'spassword");
-        var response = service.login(req);
+        var response = service.login(req, dataManager);
         assert(response.getToken() != null);
     }
 
@@ -96,7 +102,7 @@ public class ServiceTests {
         var req = new Request();
 
         req.setAuthToken(token);
-        var games = service.listGames(req).getGameList();
+        var games = service.listGames(req, dataManager).getGameList();
         assert(games.get(0) != null);
     }
 
@@ -106,7 +112,7 @@ public class ServiceTests {
         var req = new Request();
 
         req.setAuthToken("wrong token");
-        assertThrows(DataAccessException.class, () -> service.listGames(req));
+        assertThrows(DataAccessException.class, () -> service.listGames(req, dataManager));
     }
     @Test
     public void joinGameService() throws DataAccessException{
@@ -117,9 +123,9 @@ public class ServiceTests {
         req.setGameID(gameID);
         req.setPlayerColor(ChessGame.TeamColor.WHITE);
 
-        service.joinGame(req);
+        service.joinGame(req, dataManager);
 
-        assert DataAccess.getInstance().getGameAccess().find(gameID).getWhiteUsername().equals("jerry");
+        assert dataManager.getGameAccess().find(gameID).getWhiteUsername().equals("jerry");
     }
 
     @Test
@@ -131,7 +137,7 @@ public class ServiceTests {
         req.setGameID(7423765);
         req.setPlayerColor(ChessGame.TeamColor.WHITE);
 
-        assertThrows(DataAccessException.class, () -> service.joinGame(req));
+        assertThrows(DataAccessException.class, () -> service.joinGame(req, dataManager));
     }
 
     @Test
@@ -140,8 +146,8 @@ public class ServiceTests {
         var req = new Request();
         req.setAuthToken(token);
         req.setGameName("bob's game");
-        gameID = Integer.parseInt(gameService.createGame(req).getGameID());
-        GameData game = DataAccess.getInstance().getGameAccess().find(gameID);
+        gameID = Integer.parseInt(gameService.createGame(req, dataManager).getGameID());
+        GameData game = dataManager.getGameAccess().find(gameID);
         assert game != null;
     }
 
@@ -151,13 +157,13 @@ public class ServiceTests {
         var req = new Request();
         req.setAuthToken("wrong token");
         req.setGameName("game name");
-        assertThrows(DataAccessException.class, () -> gameService.createGame(req));
+        assertThrows(DataAccessException.class, () -> gameService.createGame(req, dataManager));
     }
 
     @Test
-    public void clearApplicationService(){
-        new ClearAppService().clearApplication();
-        assert DataAccess.getInstance().getGameAccess().findAll().isEmpty();
+    public void clearApplicationService() throws DataAccessException{
+        new ClearAppService().clearApplication(dataManager);
+        assert dataManager.getGameAccess().findAll().isEmpty();
     }
 
 }

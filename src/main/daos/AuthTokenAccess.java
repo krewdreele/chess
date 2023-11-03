@@ -25,7 +25,7 @@ public interface AuthTokenAccess {
     /**
      * clears all tokens from the database
      */
-    void clear();
+    void clear() throws DataAccessException;
 
     void delete(String token) throws DataAccessException;
 }

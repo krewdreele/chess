@@ -1,5 +1,6 @@
 package handlers;
 
+import daos.DataAccess;
 import dataAccess.DataAccessException;
 import services.LoginService;
 import spark.Request;
@@ -15,11 +16,11 @@ public class LoginHandler {
      * Call the 'login' service
      * @param request - the http request
      */
-    public static String loginRequest(Request request) throws DataAccessException {
+    public static String loginRequest(Request request, DataAccess dataManager) throws DataAccessException {
         Gson gson = new Gson();
         models.Request loginRequest = gson.fromJson(String.valueOf(request.body()), models.Request.class);
         LoginService service = new LoginService();
-        models.Response response = service.login(loginRequest);
+        models.Response response = service.login(loginRequest, dataManager);
 
         return gson.toJson(response);
     }

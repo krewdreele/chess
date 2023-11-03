@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import daos.DataAccess;
 import dataAccess.DataAccessException;
 import services.ListGamesService;
 import spark.Request;
@@ -15,13 +16,13 @@ public class ListGamesHandler {
      * Calls the 'list games' service
      * @param request - the http request
      */
-    public static String listGamesRequest(Request request) throws DataAccessException {
+    public static String listGamesRequest(Request request, DataAccess dataManager) throws DataAccessException {
         Gson gson = new Gson();
         var listGamesRequest = new models.Request();
         var authToken = request.headers("authorization");
         listGamesRequest.setAuthToken(authToken);
         var service = new ListGamesService();
-        var response = service.listGames(listGamesRequest);
+        var response = service.listGames(listGamesRequest, dataManager);
         return gson.toJson(response);
     }
 }

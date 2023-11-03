@@ -38,12 +38,7 @@ public class MemGameDAO implements GameDataAccess{
      */
     @Override
     public GameData find(int gameID) throws DataAccessException {
-        GameData game = games.get(gameID);
-        if(game == null){
-            throw new DataAccessException("400: bad request");
-        }
-
-        return game;
+        return null;
     }
 
     /**
@@ -105,13 +100,11 @@ public class MemGameDAO implements GameDataAccess{
      * @throws DataAccessException - bad request, unauthorized, server error
      */
     @Override
-    public void updateGame(int gameID, GameData newGame) throws DataAccessException {
+    public void updateGame(int gameID, ChessGame newGame) throws DataAccessException {
         GameData game = games.get(gameID);
         if(game == null || newGame == null){
             throw new DataAccessException("400: bad request");
         }
-
-        games.replace(gameID, newGame);
     }
 
     /**

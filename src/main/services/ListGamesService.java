@@ -16,10 +16,10 @@ public class ListGamesService {
      * @param r - the user's authentication token in request obj
      * @return a list of all games in the database
      */
-    public Response listGames(Request r) throws DataAccessException{
+    public Response listGames(Request r, DataAccess dataManager) throws DataAccessException{
         Response response = new Response();
-        DataAccess.getInstance().getAuthAccess().find(r.getAuthToken());
-        response.setGameList(DataAccess.getInstance().getGameAccess().findAll());
+        dataManager.getAuthAccess().find(r.getAuthToken());
+        response.setGameList(dataManager.getGameAccess().findAll());
 
         return response;
     }

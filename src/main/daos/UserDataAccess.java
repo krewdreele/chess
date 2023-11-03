@@ -18,14 +18,14 @@ public interface UserDataAccess {
     /**
      * Finds the user object associated with the username
      * @param username - the user's username
-     * @return the user data object
+     * @return the password
      * @throws DataAccessException - user cannot be found, not authorized
      */
-    UserData find(String username) throws DataAccessException;
+    String find(String username) throws DataAccessException;
 
     /**
      * clears all users from the database
      */
-    void clear();
+    void clear() throws DataAccessException;
 
 }

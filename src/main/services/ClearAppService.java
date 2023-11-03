@@ -1,6 +1,7 @@
 package services;
 
 import daos.DataAccess;
+import dataAccess.DataAccessException;
 import models.Response;
 
 /**
@@ -13,11 +14,11 @@ public class ClearAppService {
      * (Should require authentication...)
      * @return the response message
      */
-    public Response clearApplication() {
+    public Response clearApplication(DataAccess dataManager) throws DataAccessException {
         Response r = new Response();
-        DataAccess.getInstance().getAuthAccess().clear();
-        DataAccess.getInstance().getUserAccess().clear();
-        DataAccess.getInstance().getGameAccess().clear();
+        dataManager.getAuthAccess().clear();
+        dataManager.getUserAccess().clear();
+        dataManager.getGameAccess().clear();
         return r;
     }
 }

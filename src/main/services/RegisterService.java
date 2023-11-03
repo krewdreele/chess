@@ -22,15 +22,15 @@ public class RegisterService{
      * @param r - the user wishing to register inside request obj
      * @return - the response
      */
-    public Response register(Request r) throws DataAccessException{
+    public Response register(Request r, DataAccess dataManager) throws DataAccessException{
         Response response = new Response();
         if(r.getUsername() == null || r.getPassword() == null || r.getEmail()==null){
             throw new DataAccessException("400: bad request");
         }
         var user = new UserData(r.getUsername(), r.getPassword(), r.getEmail());
-        DataAccess.getInstance().getUserAccess().insert(user);
+        dataManager.getUserAccess().insert(user);
         var token = new AuthToken(UUID.randomUUID().toString(), r.getUsername());
-        DataAccess.getInstance().getAuthAccess().insert(token);
+        dataManager.getAuthAccess().insert(token);
         response.setToken(token.getAuthToken());
         response.setUsername(r.getUsername());
 

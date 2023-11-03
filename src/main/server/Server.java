@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import daos.DataAccess;
 import dataAccess.DataAccessException;
 import handlers.*;
 import spark.Request;
@@ -17,29 +18,36 @@ public class Server {
     /**
      * starts the server
      */
+    private DataAccess dataManager;
     public static void main(String[] args){
         new Server().run();
     }
 
     private void run(){
+        try {
+            dataManager = new DataAccess();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         Spark.port(8080);
 
         // Register a directory for hosting static files
         Spark.externalStaticFileLocation("public");
 
-        Spark.post("/user", (request, response) -> RegisterHandler.registerRequest(request));
+        Spark.post("/user", (request, response) -> RegisterHandler.registerRequest(request, dataManager));
 
-        Spark.post("/session", (request, response) -> LoginHandler.loginRequest(request));
+        Spark.post("/session", (request, response) -> LoginHandler.loginRequest(request, dataManager));
 
-        Spark.delete("/db", (request, response) -> ClearAppHandler.clearApplicationRequest());
+        Spark.delete("/db", (request, response) -> ClearAppHandler.clearApplicationRequest(dataManager));
 
-        Spark.delete("/session", (request, response) -> LogoutHandler.logoutRequest(request));
+        Spark.delete("/session", (request, response) -> LogoutHandler.logoutRequest(request, dataManager));
 
-        Spark.post("/game", (request, response) -> CreateGameHandler.createGameRequest(request));
+        Spark.post("/game", (request, response) -> CreateGameHandler.createGameRequest(request, dataManager));
 
-        Spark.get("/game", (request, response) -> ListGamesHandler.listGamesRequest(request));
+        Spark.get("/game", (request, response) -> ListGamesHandler.listGamesRequest(request, dataManager));
 
-        Spark.put("/game", ((request, response) -> JoinGameHandler.JoinGameRequest(request)));
+        Spark.put("/game", ((request, response) -> JoinGameHandler.JoinGameRequest(request, dataManager)));
 
         Spark.exception(DataAccessException.class, this::errorHandler);
 

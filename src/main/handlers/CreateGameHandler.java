@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import daos.DataAccess;
 import dataAccess.DataAccessException;
 import models.Response;
 import services.CreateGameService;
@@ -17,13 +18,13 @@ public class CreateGameHandler {
      * Calls the 'create game' service
      * @param request - the http request
      */
-    public static String createGameRequest(Request request) throws DataAccessException {
+    public static String createGameRequest(Request request, DataAccess dataManager) throws DataAccessException {
         Gson gson = new Gson();
         var authToken = request.headers("authorization");
         var gameRequest = gson.fromJson(request.body(), models.Request.class);
         gameRequest.setAuthToken(authToken);
         var service = new CreateGameService();
-        Response r = service.createGame(gameRequest);
+        Response r = service.createGame(gameRequest, dataManager);
 
         return gson.toJson(r);
     }

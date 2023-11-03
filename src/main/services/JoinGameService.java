@@ -13,13 +13,15 @@ public class JoinGameService {
     /**
      * Authenticate / get user from database
      * Add user to the game with corresponding color
+     *
      * @param r - the request obj containing the necessary info
+     * @param dataManager - gets the service access to the database
      * @return the response obj with message
      */
-    public Response joinGame(Request r) throws DataAccessException{
+    public Response joinGame(Request r, DataAccess dataManager) throws DataAccessException{
         Response response = new Response();
-        var username = DataAccess.getInstance().getAuthAccess().find(r.getAuthToken());
-        DataAccess.getInstance().getGameAccess().claimSpot(r.getGameID(), username, r.getPlayerColor());
+        var username = dataManager.getAuthAccess().find(r.getAuthToken());
+        dataManager.getGameAccess().claimSpot(r.getGameID(), username, r.getPlayerColor());
         return response;
     }
 }

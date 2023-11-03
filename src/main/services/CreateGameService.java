@@ -19,11 +19,11 @@ public class CreateGameService {
      * @param r - request object with the auth token from the user
      * @return the new game data and message in response obj
      */
-    public Response createGame(Request r) throws DataAccessException{
+    public Response createGame(Request r, DataAccess dataManager) throws DataAccessException{
         Response response = new Response();
-        DataAccess.getInstance().getAuthAccess().find(r.getAuthToken());
+        dataManager.getAuthAccess().find(r.getAuthToken());
         GameData game = new GameData(newID(), r.getGameName(), new ChessGameImpl());
-        DataAccess.getInstance().getGameAccess().insert(game);
+        dataManager.getGameAccess().insert(game);
         response.setGameID(String.valueOf(game.getGameID()));
         return response;
     }

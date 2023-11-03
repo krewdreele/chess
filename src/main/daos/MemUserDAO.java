@@ -39,7 +39,7 @@ public class MemUserDAO implements UserDataAccess{
      * @throws DataAccessException - user cannot be found, not authorized
      */
     @Override
-    public UserData find(String username) throws DataAccessException {
+    public String find(String username) throws DataAccessException {
         if(username == null){
             throw new DataAccessException("400: bad request");
         }
@@ -47,7 +47,7 @@ public class MemUserDAO implements UserDataAccess{
         if(user == null){
             throw new DataAccessException("401: unauthorized");
         }
-        return user;
+        return user.getPassword();
     }
 
     /**

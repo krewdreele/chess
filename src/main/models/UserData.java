@@ -5,8 +5,8 @@ package models;
  */
 public class UserData {
     private String username;
-    private String password;
-    private String email;
+    private final String password;
+    private final String email;
 
     public UserData(String username, String password, String email) {
         this.username = username;
@@ -26,4 +26,7 @@ public class UserData {
         return password;
     }
 
+    public String getEmail() {
+        return email;
+    }
 }

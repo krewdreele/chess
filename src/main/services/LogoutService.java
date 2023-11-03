@@ -16,9 +16,9 @@ public class LogoutService {
      * @param r - the auth token to be removed inside request obj
      * @return the response message
      */
-    public Response logout(Request r) throws DataAccessException{
+    public Response logout(Request r, DataAccess dataManager) throws DataAccessException{
         Response response = new Response();
-        DataAccess.getInstance().getAuthAccess().delete(r.getAuthToken());
+        dataManager.getAuthAccess().delete(r.getAuthToken());
         return response;
     }
 }
