@@ -1,8 +1,9 @@
 package daos;
 
-import chess.ChessGame;
-import chess.ChessGameImpl;
+import Deserializers.*;
+import chess.*;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dataAccess.DataAccessException;
 import dataAccess.Database;
 import models.GameData;
@@ -13,8 +14,20 @@ import java.util.List;
 
 public class DbGameDAO implements GameDataAccess{
     private final Database db;
+    private final Gson builder;
     public DbGameDAO(Database db){
         this.db = db;
+        builder = new GsonBuilder()
+                .registerTypeAdapter(ChessGame.class,
+                        new ChessGameDS())
+                .registerTypeAdapter(ChessBoard.class,
+                        new ChessBoardDS())
+                .registerTypeAdapter(ChessPiece.class,
+                        new ChessPieceInterfaceDS())
+                .registerTypeAdapter(ChessPieceImpl.class,
+                        new ChessPieceSerializationManager())
+                .registerTypeAdapter(ChessPosition.class,
+                        new ChessPositionDS()).create();
     }
     /**
      * Inserts a new game into the database
@@ -32,7 +45,7 @@ public class DbGameDAO implements GameDataAccess{
         try (var preparedStatement = conn.prepareStatement("INSERT INTO game (gameID, gameName, game) VALUES(?, ?, ?)")) {
             preparedStatement.setString(1, String.valueOf(game.getGameID()));
             preparedStatement.setString(2, game.getGameName());
-            preparedStatement.setString(3, new Gson().toJson(game.getGame()));
+            preparedStatement.setString(3, builder.toJson(game.getGame()));
 
             preparedStatement.executeUpdate();
 
@@ -82,7 +95,7 @@ public class DbGameDAO implements GameDataAccess{
             throw new DataAccessException("400: bad request");
         }
         else {
-            game = new GameData(gameID, gameName, new Gson().fromJson(chessGame, ChessGameImpl.class));
+            game = new GameData(gameID, gameName, builder.fromJson(chessGame, ChessGame.class));
             game.setWhiteUsername(whiteUsername);
             game.setBlackUsername(blackUsername);
         }
@@ -108,7 +121,7 @@ public class DbGameDAO implements GameDataAccess{
                     var gameName = rs.getString("gameName");
                     var chessGame = rs.getString("game");
 
-                    var game = new GameData(Integer.parseInt(gameID), gameName, new Gson().fromJson(chessGame, ChessGameImpl.class));
+                    var game = new GameData(Integer.parseInt(gameID), gameName, builder.fromJson(chessGame, ChessGame.class));
                     game.setBlackUsername(blackUser);
                     game.setWhiteUsername(whiteUser);
                     games.add(game);
@@ -188,7 +201,7 @@ public class DbGameDAO implements GameDataAccess{
         find(gameID);
         var conn = db.getConnection();
         try (var preparedStatement = conn.prepareStatement("UPDATE game SET game=? WHERE gameID=?")) {
-            preparedStatement.setString(1, new Gson().toJson(newGame));
+            preparedStatement.setString(1, builder.toJson(newGame));
             preparedStatement.setString(2, String.valueOf(gameID));
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

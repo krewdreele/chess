@@ -2,7 +2,6 @@ package chess;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
- * 
  * Note: You can add to this interface, but you should not alter the existing
  * methods.
  */
@@ -31,4 +30,5 @@ public interface ChessBoard {
      */
     void resetBoard();
 
+    void movePiece(ChessMove move);
 }

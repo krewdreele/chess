@@ -3,8 +3,9 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Rook extends ChessPieceImpl implements ChessPiece{
+public class Rook extends ChessPieceImpl{
     private final ChessGame.TeamColor color;
+    private final PieceType type = PieceType.ROOK;
     public Rook(ChessGame.TeamColor pieceColor) {
         this.color = pieceColor;
     }
@@ -16,7 +17,7 @@ public class Rook extends ChessPieceImpl implements ChessPiece{
 
     @Override
     public PieceType getPieceType() {
-        return PieceType.ROOK;
+        return type;
     }
 
     @Override

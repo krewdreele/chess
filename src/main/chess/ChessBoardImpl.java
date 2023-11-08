@@ -4,11 +4,10 @@ public class ChessBoardImpl implements ChessBoard {
 
     private ChessPiece[][] pieces;
 
-    public ChessBoardImpl() {
+    public ChessBoardImpl(){
         pieces = new ChessPiece[8][8];
     }
-
-    public ChessBoardImpl(ChessBoardImpl other) {
+    public ChessBoardImpl(ChessBoard other) {
         pieces = new ChessPiece[8][8];
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {

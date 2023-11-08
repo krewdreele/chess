@@ -5,10 +5,12 @@ import java.util.Collection;
 
 public class ChessGameImpl implements ChessGame{
 
-    private ChessBoardImpl board;
+    private ChessBoard board;
     private TeamColor turn;
     public ChessGameImpl(){
         turn = TeamColor.WHITE;
+        board = new ChessBoardImpl();
+        board.resetBoard();
     }
     @Override
     public TeamColor getTeamTurn() {
@@ -49,7 +51,7 @@ public class ChessGameImpl implements ChessGame{
     private boolean invalidMove(ChessMove move){
         TeamColor color = board.getPiece(move.getStartPosition()).getTeamColor();
         //copy our current board state
-        ChessBoardImpl copyBoard = new ChessBoardImpl(board);
+        ChessBoard copyBoard = new ChessBoardImpl(board);
         board.movePiece(move);
         boolean inCheck = isInCheck(color);
         //reset board state
@@ -140,7 +142,7 @@ public class ChessGameImpl implements ChessGame{
 
     @Override
     public void setBoard(ChessBoard board) {
-        this.board = (ChessBoardImpl) board;
+        this.board = board;
     }
 
     @Override
