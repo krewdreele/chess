@@ -1,5 +1,3 @@
-package server;
-
 import com.google.gson.Gson;
 import daos.DataAccess;
 import dataAccess.DataAccessException;
@@ -13,14 +11,14 @@ import java.util.Map;
 /**
  * Class that starts the Spark server and calls the corresponding handler for each http request
  */
-public class Server {
+public class Main {
 
     /**
      * starts the server and database accessor
      */
     private DataAccess dataManager;
     public static void main(String[] args){
-        new Server().run();
+        new Main().run();
     }
 
     private void run(){

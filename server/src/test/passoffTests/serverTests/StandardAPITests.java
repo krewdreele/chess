@@ -159,7 +159,7 @@ public class StandardAPITests {
 
         Assertions.assertEquals(HTTP_OK, serverFacade.getStatusCode(), "Server response code was not 200 OK");
         Assertions.assertTrue(registerResult.success,
-                "server.Server did not say registration was successful for new user.");
+                "Server did not say registration was successful for new user.");
         Assertions.assertFalse(
                 registerResult.message != null && registerResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response gave an error message");

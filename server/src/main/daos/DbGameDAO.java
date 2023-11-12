@@ -155,7 +155,7 @@ public class DbGameDAO implements GameDataAccess{
         }
         var conn = db.getConnection();
         switch (color) {
-            case TeamColor.WHITE:
+            case WHITE:
                 if(game.getWhiteUsername() != null){
                     throw new DataAccessException("403: already taken");
                 }
@@ -170,7 +170,7 @@ public class DbGameDAO implements GameDataAccess{
                     db.returnConnection(conn);
                 }
                 break;
-            case TeamColor.BLACK:
+            case BLACK:
                 if(game.getBlackUsername() != null){
                     throw new DataAccessException("403: already taken");
                 }
