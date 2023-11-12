@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * Class that starts the Spark server and calls the corresponding handler for each http request
  */
-public class Main {
+public class ServerMain {
 
     /**
      * starts the server and database accessor
      */
     private DataAccess dataManager;
     public static void main(String[] args){
-        new Main().run();
+        new ServerMain().run();
     }
 
     private void run(){

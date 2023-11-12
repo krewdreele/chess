@@ -6,7 +6,6 @@ import chess.ChessGame;
  * Holds information about the request coming in depending on what kind of request
  */
 public class Request {
-    private String message;
     private String username;
     private String password;
     private String authToken;
@@ -15,13 +14,6 @@ public class Request {
     private ChessGame.TeamColor playerColor;
     private int gameID;
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public String getUsername() {
         return username;
