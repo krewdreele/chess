@@ -1,4 +1,4 @@
-package Deserializers;
+package serializers;
 
 import chess.ChessPiece;
 import chess.ChessPieceImpl;

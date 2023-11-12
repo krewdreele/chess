@@ -33,7 +33,7 @@ public class Server {
         Spark.port(8080);
 
         // Register a directory for hosting static files
-        Spark.externalStaticFileLocation("public");
+        Spark.externalStaticFileLocation("web");
 
         Spark.post("/user", (request, response) -> RegisterHandler.registerRequest(request, dataManager));
 

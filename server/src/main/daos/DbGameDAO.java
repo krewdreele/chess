@@ -1,6 +1,6 @@
 package daos;
 
-import Deserializers.*;
+import serializers.*;
 import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -155,7 +155,7 @@ public class DbGameDAO implements GameDataAccess{
         }
         var conn = db.getConnection();
         switch (color) {
-            case WHITE:
+            case TeamColor.WHITE:
                 if(game.getWhiteUsername() != null){
                     throw new DataAccessException("403: already taken");
                 }
@@ -170,7 +170,7 @@ public class DbGameDAO implements GameDataAccess{
                     db.returnConnection(conn);
                 }
                 break;
-            case BLACK:
+            case TeamColor.BLACK:
                 if(game.getBlackUsername() != null){
                     throw new DataAccessException("403: already taken");
                 }

@@ -1,4 +1,4 @@
-package Deserializers;
+package serializers;
 
 import chess.ChessPieceImpl;
 import com.google.gson.*;
