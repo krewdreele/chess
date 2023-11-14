@@ -10,15 +10,14 @@ import java.util.Objects;
  * Holds all the game data and response message (if necessary)
  */
 public class GameData{
-    private final int gameID;
+    private int gameID;
     private String whiteUsername;
     private String blackUsername;
     private final String gameName;
     private ChessGame game;
     private final List<String> observers;
 
-    public GameData(int gameID, String gameName, ChessGame game) {
-        this.gameID = gameID;
+    public GameData(String gameName, ChessGame game) {
         this.gameName = gameName;
         this.game = game;
         observers = new ArrayList<>();
@@ -75,5 +74,9 @@ public class GameData{
     @Override
     public int hashCode() {
         return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game, observers);
+    }
+
+    public void setGameID(int id) {
+        gameID = id;
     }
 }

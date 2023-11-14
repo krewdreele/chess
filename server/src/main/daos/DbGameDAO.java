@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 public class DbGameDAO implements GameDataAccess{
     private final Database db;
     private final Gson builder;
@@ -42,13 +44,18 @@ public class DbGameDAO implements GameDataAccess{
         }
 
         var conn = db.getConnection();
-        try (var preparedStatement = conn.prepareStatement("INSERT INTO game (gameID, gameName, game) VALUES(?, ?, ?)")) {
-            preparedStatement.setString(1, String.valueOf(game.getGameID()));
-            preparedStatement.setString(2, game.getGameName());
-            preparedStatement.setString(3, builder.toJson(game.getGame()));
+        try (var preparedStatement = conn.prepareStatement("INSERT INTO game (gameName, game) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, game.getGameName());
+            preparedStatement.setString(2, builder.toJson(game.getGame()));
 
             preparedStatement.executeUpdate();
 
+            var resultSet = preparedStatement.getGeneratedKeys();
+            var ID = 0;
+            if (resultSet.next()) {
+                ID = resultSet.getInt(1);
+            }
+            game.setGameID(ID);
         }
         catch(SQLException e){
             throw new DataAccessException(e.getMessage());
@@ -95,9 +102,10 @@ public class DbGameDAO implements GameDataAccess{
             throw new DataAccessException("400: bad request");
         }
         else {
-            game = new GameData(gameID, gameName, builder.fromJson(chessGame, ChessGame.class));
+            game = new GameData(gameName, builder.fromJson(chessGame, ChessGame.class));
             game.setWhiteUsername(whiteUsername);
             game.setBlackUsername(blackUsername);
+            game.setGameID(gameID);
         }
         return game;
     }
@@ -115,15 +123,16 @@ public class DbGameDAO implements GameDataAccess{
         try(var preparedStatemtent = conn.prepareStatement("SELECT * FROM game")){
             try(var rs = preparedStatemtent.executeQuery()){
                 while (rs.next()){
-                    var gameID = rs.getString("gameID");
+                    var id = rs.getString("gameID");
                     var whiteUser = rs.getString("whiteUsername");
                     var blackUser = rs.getString("blackUsername");
                     var gameName = rs.getString("gameName");
                     var chessGame = rs.getString("game");
 
-                    var game = new GameData(Integer.parseInt(gameID), gameName, builder.fromJson(chessGame, ChessGame.class));
+                    var game = new GameData(gameName, builder.fromJson(chessGame, ChessGame.class));
                     game.setBlackUsername(blackUser);
                     game.setWhiteUsername(whiteUser);
+                    game.setGameID(Integer.parseInt(id));
                     games.add(game);
                 }
             }

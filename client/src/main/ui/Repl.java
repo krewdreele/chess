@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Repl {
 
-    private Client client;
+    private final Client client;
     public Repl(String serverURL){
         client = new Client(serverURL, this);
     }
@@ -32,7 +32,6 @@ public class Repl {
 
     public void notify(String notification) {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + notification);
-        printPrompt();
     }
 
     private void printPrompt() {

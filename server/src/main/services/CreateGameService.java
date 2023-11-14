@@ -11,7 +11,6 @@ import models.Request;
  * The service that creates a new game
  */
 public class CreateGameService {
-    private static int ID = 0;
     /**
      * Validates the auth token
      * Creates a new game -> stores in database
@@ -22,13 +21,9 @@ public class CreateGameService {
     public Response createGame(Request r, DataAccess dataManager) throws DataAccessException{
         Response response = new Response();
         dataManager.getAuthAccess().find(r.getAuthToken());
-        GameData game = new GameData(newID(), r.getGameName(), new ChessGameImpl());
+        GameData game = new GameData(r.getGameName(), new ChessGameImpl());
         dataManager.getGameAccess().insert(game);
         response.setGameID(String.valueOf(game.getGameID()));
         return response;
-    }
-    private int newID(){
-        ID += 1;
-        return ID;
     }
 }

@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 public class ChessPieceSerializationManager implements JsonSerializer<ChessPieceImpl>, JsonDeserializer<ChessPieceImpl> {
     private static final String CLASS_META_KEY = "CLASS_META_KEY";
     /**
-     * @param chessPiece
+     * @param chessPiece - the piece to be serialized
      * @param type
      * @param ctx
      * @return
@@ -31,6 +31,9 @@ public class ChessPieceSerializationManager implements JsonSerializer<ChessPiece
     @Override
     public ChessPieceImpl deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext ctx) throws JsonParseException {
         JsonObject jsonObj = jsonElement.getAsJsonObject();
+        if(jsonObj.get(CLASS_META_KEY) == null){
+            return null;
+        }
         String className = jsonObj.get(CLASS_META_KEY).getAsString();
         try {
             Class<?> clz = Class.forName(className);

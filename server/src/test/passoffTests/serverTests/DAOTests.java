@@ -50,11 +50,11 @@ public class DAOTests {
 
     @Test
     public void writeReadGame() throws DataAccessException{
-        GameData game = new GameData(1234, "bob's game", new ChessGameImpl());
+        GameData game = new GameData("bob's game", new ChessGameImpl());
 
         assertThrows(DataAccessException.class, () -> db.getGameAccess().find(1234));
         db.getGameAccess().insert(game);
-        assert (db.getGameAccess().find(1234).equals(game));
+        assert (db.getGameAccess().find(game.getGameID()).equals(game));
     }
 
     @Test
@@ -75,9 +75,9 @@ public class DAOTests {
         assert (db.getGameAccess().findAll().isEmpty());
 
         ArrayList<GameData> games = new ArrayList<>();
-        games.add(new GameData(123, "game 1", new ChessGameImpl()));
-        games.add(new GameData(124, "game 2", new ChessGameImpl()));
-        games.add(new GameData(125, "game 3", new ChessGameImpl()));
+        games.add(new GameData("game 1", new ChessGameImpl()));
+        games.add(new GameData("game 2", new ChessGameImpl()));
+        games.add(new GameData("game 3", new ChessGameImpl()));
 
         for(var game : games){
             db.getGameAccess().insert(game);
@@ -90,35 +90,36 @@ public class DAOTests {
 
     @Test
     public void claimSpot() throws DataAccessException{
-        db.getGameAccess().insert(new GameData(123, "game", new ChessGameImpl()));
-        db.getGameAccess().claimSpot(123, "bob", ChessGame.TeamColor.WHITE);
-        assert (db.getGameAccess().find(123).getWhiteUsername().equals("bob"));
-        assertThrows(DataAccessException.class, () -> db.getGameAccess().claimSpot(123, "chel", ChessGame.TeamColor.WHITE));
+        var game = new GameData("game", new ChessGameImpl());
+        db.getGameAccess().insert(game);
+        db.getGameAccess().claimSpot(game.getGameID(), "bob", ChessGame.TeamColor.WHITE);
+        assert (db.getGameAccess().find(game.getGameID()).getWhiteUsername().equals("bob"));
+        assertThrows(DataAccessException.class, () -> db.getGameAccess().claimSpot(game.getGameID(), "chel", ChessGame.TeamColor.WHITE));
     }
 
     @Test
     public void updateGame() throws DataAccessException{
         ChessGameImpl chessGame = new ChessGameImpl();
-        GameData game = new GameData(123, "bob's game", chessGame);
+        GameData game = new GameData("bob's game", chessGame);
         db.getGameAccess().insert(game);
         chessGame.setTeamTurn(ChessGame.TeamColor.BLACK);
-        assertThrows(DataAccessException.class, () -> db.getGameAccess().updateGame(0, new ChessGameImpl()));
-        db.getGameAccess().updateGame(123, chessGame);
-        assert (db.getGameAccess().find(123).getGame().getTeamTurn() == ChessGame.TeamColor.BLACK);
+        assertThrows(DataAccessException.class, () -> db.getGameAccess().updateGame(1378932, new ChessGameImpl()));
+        db.getGameAccess().updateGame(game.getGameID(), chessGame);
+        assert (db.getGameAccess().find(game.getGameID()).getGame().getTeamTurn() == ChessGame.TeamColor.BLACK);
     }
 
     @Test
     public void removeGame() throws DataAccessException{
-        GameData game1 = new GameData(123, "game", new ChessGameImpl());
+        GameData game1 = new GameData("game", new ChessGameImpl());
         db.getGameAccess().insert(game1);
         assertThrows(DataAccessException.class, () -> db.getGameAccess().remove(0));
-        db.getGameAccess().remove(123);
+        db.getGameAccess().remove(game1.getGameID());
         assert (db.getGameAccess().findAll().isEmpty());
     }
 
     @Test
     public void clearGames() throws DataAccessException{
-        GameData game1 = new GameData(123, "game", new ChessGameImpl());
+        GameData game1 = new GameData("game", new ChessGameImpl());
         db.getGameAccess().insert(game1);
         db.getGameAccess().clear();
         assert (db.getGameAccess().findAll().isEmpty());

@@ -67,7 +67,7 @@ public class DataAccess {
         var createGameTable =
                 """
                     CREATE TABLE IF NOT EXISTS game (
-                        gameID INT NOT NULL,
+                        gameID INT NOT NULL AUTO_INCREMENT,
                         gameName VARCHAR(255) NOT NULL,
                         whiteUsername VARCHAR(255),
                         blackUsername VARCHAR(255),

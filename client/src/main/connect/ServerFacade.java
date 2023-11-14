@@ -1,9 +1,12 @@
 package connect;
 
+import chess.*;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import exception.ResponseException;
 import models.Request;
 import models.Response;
+import serializers.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +19,21 @@ import java.net.URL;
 public class ServerFacade {
     private final String serverUrl;
 
+    private static Gson builder;
+
     public ServerFacade(String url) {
         serverUrl = url;
+        builder = new GsonBuilder()
+                .registerTypeAdapter(ChessGame.class,
+                        new ChessGameDS())
+                .registerTypeAdapter(ChessBoard.class,
+                        new ChessBoardDS())
+                .registerTypeAdapter(ChessPiece.class,
+                        new ChessPieceInterfaceDS())
+                .registerTypeAdapter(ChessPieceImpl.class,
+                        new ChessPieceSerializationManager())
+                .registerTypeAdapter(ChessPosition.class,
+                        new ChessPositionDS()).create();
     }
 
     public Response register(Request req) throws ResponseException{
@@ -54,7 +70,7 @@ public class ServerFacade {
 
             http.setRequestProperty("Authorization", request.getAuthToken());
             request.setAuthToken(null);
-            writeBody(request, http);
+            if(!method.equals("GET")) writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http);
@@ -65,7 +81,7 @@ public class ServerFacade {
     private static void writeBody(Request request, HttpURLConnection http) throws IOException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(request);
+            String reqData = builder.toJson(request);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
@@ -84,7 +100,7 @@ public class ServerFacade {
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
-                response = new Gson().fromJson(reader, Response.class);
+                response = builder.fromJson(reader, Response.class);
             }
         }
         return response;
