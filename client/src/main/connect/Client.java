@@ -31,7 +31,7 @@ public class Client {
                 return switch (cmd) {
                     case "login" -> login(params);
                     case "register" -> register(params);
-                    case "quit" -> "quit";
+                    case "quit" -> "See ya! :(";
                     default -> help();
                 };
             } else {
@@ -41,7 +41,7 @@ public class Client {
                     case "list" -> listGames();
                     case "join" -> joinGame(params);
                     case "observe" -> observe(params);
-                    case "quit" -> "quit";
+                    case "quit" -> "See ya! :(";
                     default -> help();
                 };
             }
@@ -116,7 +116,7 @@ public class Client {
         server.logout(request);
         state = State.LOGGEDOUT;
         authToken = "";
-        return "See ya!";
+        return help();
     }
 
     private String login(String... params) throws ResponseException {

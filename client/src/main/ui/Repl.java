@@ -16,7 +16,7 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quit")) {
+        while (!result.equals("See ya! :(")) {
             printPrompt();
             String line = scanner.nextLine();
 
