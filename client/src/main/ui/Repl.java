@@ -1,6 +1,5 @@
 package ui;
 
-import connect.Client;
 import java.util.Scanner;
 
 public class Repl {
