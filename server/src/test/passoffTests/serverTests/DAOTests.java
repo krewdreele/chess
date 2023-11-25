@@ -105,7 +105,7 @@ public class DAOTests {
         chessGame.setTeamTurn(ChessGame.TeamColor.BLACK);
         assertThrows(DataAccessException.class, () -> db.getGameAccess().updateGame(1378932, new ChessGameImpl()));
         db.getGameAccess().updateGame(game.getGameID(), chessGame);
-        assert (db.getGameAccess().find(game.getGameID()).getGame().getTeamTurn() == ChessGame.TeamColor.BLACK);
+        assert (db.getGameAccess().find(game.getGameID()).getChessGame().getTeamTurn() == ChessGame.TeamColor.BLACK);
     }
 
     @Test

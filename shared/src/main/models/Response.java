@@ -11,6 +11,7 @@ public class Response {
     private String gameID;
     private String authToken;
     private List<GameData> games;
+    private GameData game;
 
     public Response() {
     }
@@ -52,5 +53,12 @@ public class Response {
 
     public List<GameData> getGameList(){
         return games;
+    }
+
+    public GameData getGame(){
+        return game;
+    }
+    public void setGame(GameData game){
+        this.game = game;
     }
 }

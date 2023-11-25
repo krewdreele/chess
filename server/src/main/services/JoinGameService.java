@@ -21,7 +21,7 @@ public class JoinGameService {
     public Response joinGame(Request r, DataAccess dataManager) throws DataAccessException{
         Response response = new Response();
         var username = dataManager.getAuthAccess().find(r.getAuthToken());
-        dataManager.getGameAccess().claimSpot(r.getGameID(), username, r.getPlayerColor());
+        response.setGame(dataManager.getGameAccess().claimSpot(r.getGameID(), username, r.getPlayerColor()));
         return response;
     }
 }

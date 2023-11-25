@@ -5,7 +5,6 @@ import java.util.Collection;
 
 public class Knight extends ChessPieceImpl{
     private final ChessGame.TeamColor color;
-    private final PieceType type = PieceType.KNIGHT;
     public Knight(ChessGame.TeamColor pieceColor) {
         color = pieceColor;
     }
@@ -17,7 +16,7 @@ public class Knight extends ChessPieceImpl{
 
     @Override
     public PieceType getPieceType() {
-        return type;
+        return PieceType.KNIGHT;
     }
 
     @Override

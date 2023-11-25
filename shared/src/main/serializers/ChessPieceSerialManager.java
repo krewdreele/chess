@@ -5,7 +5,7 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
-public class ChessPieceSerializationManager implements JsonSerializer<ChessPieceImpl>, JsonDeserializer<ChessPieceImpl> {
+public class ChessPieceSerialManager implements JsonSerializer<ChessPieceImpl>, JsonDeserializer<ChessPieceImpl> {
     private static final String CLASS_META_KEY = "CLASS_META_KEY";
     /**
      * @param chessPiece - the piece to be serialized

@@ -62,10 +62,11 @@ public class MemGameDAO implements GameDataAccess{
      * @param gameID   - the game being claimed
      * @param username - the username of the player claiming it
      * @param color    - whether they are entering as black or white
+     * @return
      * @throws DataAccessException - spot is taken, unauthorized, bad request, server error
      */
     @Override
-    public void claimSpot(int gameID, String username, ChessGame.TeamColor color) throws DataAccessException {
+    public GameData claimSpot(int gameID, String username, ChessGame.TeamColor color) throws DataAccessException {
         GameData game = games.get(gameID);
         if(game == null){
             throw new DataAccessException("400: bad request");
@@ -90,6 +91,7 @@ public class MemGameDAO implements GameDataAccess{
         else{
             game.addObserver(username);
         }
+        return game;
     }
 
     /**

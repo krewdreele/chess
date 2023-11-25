@@ -6,7 +6,7 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
-public class ChessPieceInterfaceDS implements JsonDeserializer<ChessPiece>, JsonSerializer<ChessPiece> {
+public class ChessPieceInterfaceManager implements JsonDeserializer<ChessPiece>, JsonSerializer<ChessPiece> {
 
     /**
      * @param jsonElement

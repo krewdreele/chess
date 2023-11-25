@@ -43,7 +43,7 @@ public class GameData{
         this.blackUsername = blackUsername;
     }
 
-    public ChessGame getGame() {
+    public ChessGame getChessGame() {
         return game;
     }
 

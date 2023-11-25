@@ -5,7 +5,6 @@ import java.util.Collection;
 
 public class Rook extends ChessPieceImpl{
     private final ChessGame.TeamColor color;
-    private final PieceType type = PieceType.ROOK;
     public Rook(ChessGame.TeamColor pieceColor) {
         this.color = pieceColor;
     }
@@ -17,7 +16,7 @@ public class Rook extends ChessPieceImpl{
 
     @Override
     public PieceType getPieceType() {
-        return type;
+        return PieceType.ROOK;
     }
 
     @Override

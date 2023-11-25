@@ -35,12 +35,14 @@ public interface GameDataAccess {
 
     /**
      * Used to claim a spot on a game
-     * @param gameID - the game being claimed
+     *
+     * @param gameID   - the game being claimed
      * @param username - the username of the player claiming it
-     * @param color - whether they are entering as black or white
+     * @param color    - whether they are entering as black or white
+     * @return
      * @throws DataAccessException - spot is taken, unauthorized, bad request, server error
      */
-    void claimSpot(int gameID, String username, ChessGame.TeamColor color) throws DataAccessException;
+    GameData claimSpot(int gameID, String username, ChessGame.TeamColor color) throws DataAccessException;
 
     /**
      * Replaces a game with a new game

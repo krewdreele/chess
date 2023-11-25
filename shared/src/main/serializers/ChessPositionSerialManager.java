@@ -6,7 +6,7 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
-public class ChessPositionDS implements JsonDeserializer<ChessPosition> {
+public class ChessPositionSerialManager implements JsonDeserializer<ChessPosition>, JsonSerializer<ChessPosition> {
     /**
      * @param jsonElement
      * @param type
@@ -17,5 +17,16 @@ public class ChessPositionDS implements JsonDeserializer<ChessPosition> {
     @Override
     public ChessPosition deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
        return new Gson().fromJson(jsonElement, ChessPositionImpl.class);
+    }
+
+    /**
+     * @param position
+     * @param type
+     * @param ctx
+     * @return
+     */
+    @Override
+    public JsonElement serialize(ChessPosition position, Type type, JsonSerializationContext ctx) {
+        return ctx.serialize(position, ChessPositionImpl.class);
     }
 }

@@ -5,8 +5,6 @@ import connect.ServerFacade;
 import exception.ResponseException;
 import models.GameData;
 import models.Request;
-import ui.Repl;
-import ui.State;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,13 +12,19 @@ import java.util.Arrays;
 public class Client {
     private final ServerFacade server;
     private State state = State.LOGGEDOUT;
-    private final Repl r;
+    private final Repl repl;
     private String authToken;
     private ArrayList<GameData> games;
+    private Permission permission;
 
-    public Client(String serverUrl, Repl r){
+    public enum Permission {
+        PLAYER,
+        ADMIN
+    }
+
+    public Client(String serverUrl, Repl repl){
         server = new ServerFacade(serverUrl);
-        this.r = r;
+        this.repl = repl;
         games = new ArrayList<>();
     }
     public String eval(String input){
@@ -42,25 +46,51 @@ public class Client {
                     case "list" -> listGames();
                     case "join" -> joinGame(params);
                     case "observe" -> observe(params);
+                    case "clear" -> clear();
                     case "quit" -> "See ya! :(";
                     default -> help();
                 };
             }
         }
         catch (Exception e){
-            r.notify(e.getMessage());
+            repl.notify(e.getMessage());
         }
         return "";
     }
 
-    private String observe(String... params) {
-        return "";
+    private String clear() throws ResponseException {
+        if(permission != Permission.ADMIN){
+            return "You do not have permission to do this";
+        }
+
+        server.clear(new Request());
+        var request = new Request();
+        request.setUsername("mr.ski");
+        request.setPassword("9979");
+        request.setEmail("email");
+        server.register(request);
+        return "Done";
+    }
+
+    private String observe(String... params) throws ResponseException {
+        var request = new Request();
+        try{
+            var index = Integer.parseInt(params[0]) - 1;
+            request.setGameID(games.get(index).getGameID());
+        }
+        catch (Exception e){
+            return "Please enter a valid game number";
+        }
+        var response = server.join(request);
+        var board = new ChessBoardImpl();
+        board.resetBoard();
+        return drawBoard(board, ChessGame.TeamColor.WHITE) + "\n\n" + drawBoard(board, ChessGame.TeamColor.BLACK);
     }
 
     private String joinGame(String... params) throws ResponseException {
         var request = new Request();
         if (params.length != 2) {
-            throw new ResponseException(400, "bad request");
+            return "You need to enter a color and game number!";
         }
         if (games.isEmpty()) {
             listGames();
@@ -69,22 +99,22 @@ public class Client {
             }
         }
         request.setAuthToken(authToken);
-        if (params[0].equals("WHITE") || params[0].equals("white") || params[0].equals("White")) {
+        if (params[1].equals("WHITE") || params[1].equals("white") || params[1].equals("White")) {
             request.setPlayerColor(ChessGame.TeamColor.WHITE);
-        } else if (params[0].equals("BLACK") || params[0].equals("black") || params[0].equals("Black")) {
+        } else if (params[1].equals("BLACK") || params[1].equals("black") || params[1].equals("Black")) {
             request.setPlayerColor(ChessGame.TeamColor.BLACK);
         }
 
-        int index = Integer.parseInt(params[1]) - 1;
+        int index = Integer.parseInt(params[0]) - 1;
         try {
             request.setGameID(games.get(index).getGameID());
         } catch (Exception e) {
             return "Not a valid game number! Use the 'list' command";
         }
-        server.join(request);
+        var response = server.join(request);
         var board = new ChessBoardImpl();
         board.resetBoard();
-        return drawBoard(board, false) + "\n\n\n" + drawBoard(board, true);
+        return drawBoard(board, ChessGame.TeamColor.WHITE) + "\n\n\n" + drawBoard(board, ChessGame.TeamColor.BLACK);
     }
 
     private String listGames() throws ResponseException {
@@ -94,8 +124,8 @@ public class Client {
         var sb = new StringBuilder();
         for(int i=0; i<response.getGameList().size(); i++){
             var game = response.getGameList().get(i);
-            var white = " ~ player 1(white): " + game.getWhiteUsername();
-            var black = " ~ player 2(black): " + game.getBlackUsername();
+            var white = " ~ player 1 (white): " + game.getWhiteUsername();
+            var black = " ~ player 2 (black): " + game.getBlackUsername();
             var name = game.getGameName();
             sb.append(i+1).append(". ").append(name).append(white).append(black).append("\n");
         }
@@ -132,11 +162,19 @@ public class Client {
         if(params.length != 2) {
             throw new ResponseException(400, "bad request");
         }
+
         request.setUsername(params[0]);
         request.setPassword(params[1]);
         var response = server.login(request);
+
         state = State.LOGGEDIN;
         authToken = response.getToken();
+        if(params[0].equals("mr.ski") && params[1].equals("9979")){
+            permission = Permission.ADMIN;
+        }
+        else{
+            permission = Permission.PLAYER;
+        }
         return "You've logged in as " + response.getUsername() + "\n" + help();
     }
 
@@ -166,26 +204,26 @@ public class Client {
                 - logout
                 - create <game name>
                 - list
-                - join <color: WHITE/BLACK> <game ID>
+                - join <game ID> <color: WHITE/BLACK>
                 - observe <game ID>
                 - quit
                 """;
     }
 
-    private String drawBoard(ChessBoard board, boolean upsideDown){
+    private String drawBoard(ChessBoard board, ChessGame.TeamColor color){
         var sb = new StringBuilder();
         int num_squares = 0;
 
         //Top row letters
-        appendLetters(sb, upsideDown);
+        appendLetters(sb, color);
         sb.append("\n");
 
         for(int i=8; i>0; i--){
             for(int j=8; j>0; j--){
-                int row = upsideDown ? 9 - i : i;
-                int column = upsideDown ? 9 - j : j;
+                int row = color == ChessGame.TeamColor.BLACK ? 9 - i : i;
+                int column = color == ChessGame.TeamColor.BLACK ? 9 - j : j;
                 //left side numbers
-                if((!upsideDown && column == 8) || (upsideDown && column == 1)){
+                if((color == ChessGame.TeamColor.WHITE && column == 8) || (color == ChessGame.TeamColor.BLACK && column == 1)){
                     sb.append(EscapeSequences.SET_BG_COLOR_BLUE).append(EscapeSequences.SET_TEXT_COLOR_WHITE).append(" ").append(row).append(" ");
                 }
 
@@ -208,7 +246,7 @@ public class Client {
                     appendPiece(sb, board, position);
                 }
                 //right side numbers
-                if((upsideDown && column == 8) || (!upsideDown && column == 1)){
+                if((color == ChessGame.TeamColor.BLACK && column == 8) || (color == ChessGame.TeamColor.WHITE && column == 1)){
                     sb.append(EscapeSequences.SET_BG_COLOR_BLUE)
                             .append(EscapeSequences.SET_TEXT_COLOR_WHITE)
                             .append(" ")
@@ -222,16 +260,16 @@ public class Client {
             }
         }
         //bottom row letters
-        appendLetters(sb, upsideDown);
+        appendLetters(sb, color);
         return sb.toString();
     }
 
-    private void appendLetters(StringBuilder sb, boolean upsideDown){
+    private void appendLetters(StringBuilder sb, ChessGame.TeamColor color){
         sb.append(EscapeSequences.SET_BG_COLOR_BLUE).append(EscapeSequences.SET_TEXT_COLOR_WHITE);
         sb.append("\u2003");
         for(int i=0; i<8;i++){
             sb.append(" \u2003");
-            if(upsideDown){
+            if(color == ChessGame.TeamColor.BLACK){
                 sb.append((char) ('h' - i));
             }
             else {

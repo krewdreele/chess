@@ -21,15 +21,15 @@ public class DbGameDAO implements GameDataAccess{
         this.db = db;
         builder = new GsonBuilder()
                 .registerTypeAdapter(ChessGame.class,
-                        new ChessGameDS())
+                        new ChessGameSerialManager())
                 .registerTypeAdapter(ChessBoard.class,
-                        new ChessBoardDS())
+                        new ChessBoardSerialManager())
                 .registerTypeAdapter(ChessPiece.class,
-                        new ChessPieceInterfaceDS())
+                        new ChessPieceInterfaceManager())
                 .registerTypeAdapter(ChessPieceImpl.class,
-                        new ChessPieceSerializationManager())
+                        new ChessPieceSerialManager())
                 .registerTypeAdapter(ChessPosition.class,
-                        new ChessPositionDS()).create();
+                        new ChessPositionSerialManager()).create();
     }
     /**
      * Inserts a new game into the database
@@ -46,7 +46,7 @@ public class DbGameDAO implements GameDataAccess{
         var conn = db.getConnection();
         try (var preparedStatement = conn.prepareStatement("INSERT INTO game (gameName, game) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, game.getGameName());
-            preparedStatement.setString(2, builder.toJson(game.getGame()));
+            preparedStatement.setString(2, builder.toJson(game.getChessGame()));
 
             preparedStatement.executeUpdate();
 
@@ -153,14 +153,15 @@ public class DbGameDAO implements GameDataAccess{
      * @param gameID   - the game being claimed
      * @param username - the username of the player claiming it
      * @param color    - whether they are entering as black or white
+     * @return the game data of the game joined
      * @throws DataAccessException - spot is taken, unauthorized, bad request, server error
      */
     @Override
-    public void claimSpot(int gameID, String username, ChessGame.TeamColor color) throws DataAccessException {
+    public GameData claimSpot(int gameID, String username, ChessGame.TeamColor color) throws DataAccessException {
         GameData game = find(gameID);
         if(color == null){
             game.addObserver(username);
-            return;
+            return game;
         }
         var conn = db.getConnection();
         switch (color) {
@@ -195,7 +196,7 @@ public class DbGameDAO implements GameDataAccess{
                 }
                 break;
         }
-
+        return game;
     }
 
     /**

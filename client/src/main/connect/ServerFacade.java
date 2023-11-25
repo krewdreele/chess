@@ -25,17 +25,21 @@ public class ServerFacade {
         serverUrl = url;
         builder = new GsonBuilder()
                 .registerTypeAdapter(ChessGame.class,
-                        new ChessGameDS())
+                        new ChessGameSerialManager())
                 .registerTypeAdapter(ChessBoard.class,
-                        new ChessBoardDS())
+                        new ChessBoardSerialManager())
                 .registerTypeAdapter(ChessPiece.class,
-                        new ChessPieceInterfaceDS())
+                        new ChessPieceInterfaceManager())
                 .registerTypeAdapter(ChessPieceImpl.class,
-                        new ChessPieceSerializationManager())
+                        new ChessPieceSerialManager())
                 .registerTypeAdapter(ChessPosition.class,
-                        new ChessPositionDS()).create();
+                        new ChessPositionSerialManager()).create();
     }
 
+    public Response clear(Request req) throws ResponseException{
+        var path = "/db";
+        return makeRequest("DELETE", path, req);
+    }
     public Response register(Request req) throws ResponseException{
         var path = "/user";
         return makeRequest("POST", path, req);
