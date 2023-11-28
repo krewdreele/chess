@@ -17,11 +17,6 @@ public class Client {
     private ArrayList<GameData> games;
     private Permission permission;
 
-    public enum Permission {
-        PLAYER,
-        ADMIN
-    }
-
     public Client(String serverUrl, Repl repl){
         server = new ServerFacade(serverUrl);
         this.repl = repl;
