@@ -74,6 +74,12 @@ public class Client {
 
     private String observe(String... params) throws ResponseException {
         var request = new Request();
+        if (games.isEmpty()) {
+            listGames();
+            if (games.isEmpty()) {
+                return "No games!";
+            }
+        }
         try{
             var index = Integer.parseInt(params[0]) - 1;
             request.setGameID(games.get(index).getGameID());
@@ -81,6 +87,7 @@ public class Client {
         catch (Exception e){
             return "Please enter a valid game number";
         }
+        request.setAuthToken(authToken);
         var response = server.join(request);
         var board = new ChessBoardImpl();
         board.resetBoard();
