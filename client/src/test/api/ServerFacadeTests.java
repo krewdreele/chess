@@ -18,19 +18,20 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() throws ResponseException {
         server = new ServerFacade("http://localhost:8080");
-    }
-    @BeforeEach
-    public void setup() throws ResponseException {
         var req = new Request();
         req.setUsername("mr.ski");
         req.setPassword("9979");
-        req.setEmail("email");
-        token = server.register(req).getToken();
+        token = server.login(req).getToken();
     }
 
     @AfterEach
     public void reset() throws ResponseException {
         server.clear(new Request());
+        var req = new Request();
+        req.setUsername("mr.ski");
+        req.setPassword("9979");
+        req.setEmail("email");
+        token = server.register(req).getToken();
     }
     @Test
     void goodRegister() throws ResponseException {
