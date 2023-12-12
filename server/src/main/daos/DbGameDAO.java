@@ -166,35 +166,37 @@ public class DbGameDAO implements GameDataAccess{
         var conn = db.getConnection();
         switch (color) {
             case WHITE:
-                if(game.getWhiteUsername() != null){
+                if(game.getWhiteUsername() == null || game.getWhiteUsername().equals(username)) {
+                    try (var preparedStatement = conn.prepareStatement("UPDATE game SET whiteUsername=? WHERE gameID=?")) {
+                        preparedStatement.setString(1, username);
+                        preparedStatement.setString(2, String.valueOf(gameID));
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException e) {
+                        throw new DataAccessException(e.getMessage());
+                    } finally {
+                        db.returnConnection(conn);
+                    }
+                    break;
+                }
+                else{
                     throw new DataAccessException("403: already taken");
                 }
-                try (var preparedStatement = conn.prepareStatement("UPDATE game SET whiteUsername=? WHERE gameID=?")) {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, String.valueOf(gameID));
-                    preparedStatement.executeUpdate();
-                } catch (SQLException e) {
-                    throw new DataAccessException(e.getMessage());
-                }
-                finally {
-                    db.returnConnection(conn);
-                }
-                break;
             case BLACK:
-                if(game.getBlackUsername() != null){
+                if(game.getBlackUsername() == null || game.getBlackUsername().equals(username)) {
+                    try (var preparedStatement = conn.prepareStatement("UPDATE game SET blackUsername=? WHERE gameID=?")) {
+                        preparedStatement.setString(1, username);
+                        preparedStatement.setString(2, String.valueOf(gameID));
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException e) {
+                        throw new DataAccessException(e.getMessage());
+                    } finally {
+                        db.returnConnection(conn);
+                    }
+                    break;
+                }
+                else{
                     throw new DataAccessException("403: already taken");
                 }
-                try (var preparedStatement = conn.prepareStatement("UPDATE game SET blackUsername=? WHERE gameID=?")) {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, String.valueOf(gameID));
-                    preparedStatement.executeUpdate();
-                } catch (SQLException e) {
-                    throw new DataAccessException(e.getMessage());
-                }
-                finally {
-                    db.returnConnection(conn);
-                }
-                break;
         }
         return game;
     }

@@ -1,5 +1,8 @@
 package chess;
 
+/**
+ * (1-8)
+ */
 public class ChessPositionImpl implements ChessPosition{
     private final int row;
     private final int column;

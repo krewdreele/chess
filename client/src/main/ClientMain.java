@@ -1,8 +1,14 @@
+import exception.ResponseException;
 import ui.Repl;
 
 public class ClientMain {
-    public static void main(String[] args) {
+    public static void main(String[] args){
         var serverUrl = "http://localhost:8080";
-        new Repl(serverUrl).run();
+        try{
+            new Repl(serverUrl).run();
+        }
+        catch (Exception e){
+            System.out.println("Could not connect to server: " + e.getMessage());
+        }
     }
 }

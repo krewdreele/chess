@@ -1,24 +1,30 @@
 package ui;
 
 import chess.*;
+import connect.NotificationHandler;
 import connect.ServerFacade;
 import exception.ResponseException;
 import models.GameData;
 import models.Request;
+import webSocketMessages.serverMessages.ServerMessage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
-public class Client {
+public class Client implements NotificationHandler {
     private final ServerFacade server;
     private State state = State.LOGGEDOUT;
     private final Repl repl;
     private String authToken;
     private ArrayList<GameData> games;
     private Permission permission;
+    private GameData gameData;
+    private ChessGame.TeamColor color;
 
-    public Client(String serverUrl, Repl repl){
-        server = new ServerFacade(serverUrl);
+    public Client(String serverUrl, Repl repl) throws ResponseException {
+        server = new ServerFacade(serverUrl, this);
         this.repl = repl;
         games = new ArrayList<>();
     }
@@ -32,9 +38,10 @@ public class Client {
                     case "login" -> login(params);
                     case "register" -> register(params);
                     case "quit" -> "See ya! :(";
-                    default -> help();
+                    case "help" -> help();
+                    default -> "Unrecognized command. Type 'help' for a list of correct commands";
                 };
-            } else {
+            } else if(state == State.LOGGEDIN){
                 return switch (cmd) {
                     case "logout" -> logout();
                     case "create" -> newGame(params);
@@ -43,14 +50,76 @@ public class Client {
                     case "observe" -> observe(params);
                     case "clear" -> clear();
                     case "quit" -> "See ya! :(";
-                    default -> help();
+                    case "help" -> help();
+                    default -> "Unrecognized command. Type 'help' for a list of correct commands";
+                };
+            }
+            else{
+                return switch (cmd) {
+                    case "redraw" -> redraw();
+                    case "leave" -> leaveGame();
+                    case "move" -> makeMove(params);
+                    case "resign" -> resign();
+                    case "show" -> showLegalMoves(params);
+                    case "help" -> help();
+                    default -> "Unrecognized command. Type 'help' for a list of correct commands";
                 };
             }
         }
         catch (Exception e){
-            repl.notify(e.getMessage());
+            repl.notifyError(e.getMessage());
         }
         return "";
+    }
+
+    private String showLegalMoves(String... params) {
+        if(params.length != 1){
+            return "Enter a position";
+        }
+        var pos = positionConverter(params[0]);
+        var legalMoves = gameData.getChessGame().validMoves(pos);
+        var legalPositions = new ArrayList<ChessPosition>();
+        for(var move : legalMoves){
+            legalPositions.add(move.getEndPosition());
+        }
+        return drawBoard(gameData, color, legalPositions);
+    }
+
+    private String resign() {
+        return "";
+    }
+
+    private String makeMove(String... params) throws ResponseException, InvalidMoveException, IOException {
+        if(params.length != 2){
+            return "Please enter two board positions";
+        }
+
+        ChessPosition start = positionConverter(params[0]);
+        ChessPosition end = positionConverter(params[1]);
+        var move = new ChessMoveImpl(start, end, null);
+        server.makeMove(authToken, gameData.getGameID(), move);
+        return "";
+    }
+
+    private ChessPosition positionConverter(String position){
+        var array = position.toCharArray();
+        char letter = array[0];
+        int row = Integer.parseInt(String.valueOf(array[1]));
+
+        int column = 8 - (letter - 'a');
+
+        return new ChessPositionImpl(row, column);
+    }
+
+    private String leaveGame() throws ResponseException, IOException {
+        state = State.LOGGEDIN;
+        server.leaveGame(authToken);
+        color = null;
+        return "You left the game";
+    }
+
+    private String redraw() {
+        return drawBoard(gameData, color, null);
     }
 
     private String clear() throws ResponseException {
@@ -67,7 +136,7 @@ public class Client {
         return "Done";
     }
 
-    private String observe(String... params) throws ResponseException {
+    private String observe(String... params) throws ResponseException, IOException {
         var request = new Request();
         if (games.isEmpty()) {
             listGames();
@@ -83,13 +152,13 @@ public class Client {
             return "Please enter a valid game number";
         }
         request.setAuthToken(authToken);
-        var response = server.join(request);
-        var board = new ChessBoardImpl();
-        board.resetBoard();
-        return drawBoard(board, ChessGame.TeamColor.WHITE) + "\n\n" + drawBoard(board, ChessGame.TeamColor.BLACK);
+        server.join(request);
+        state = State.INGAME;
+        color = null;
+        return "Success!";
     }
 
-    private String joinGame(String... params) throws ResponseException {
+    private String joinGame(String... params) throws ResponseException, IOException {
         var request = new Request();
         if (params.length != 2) {
             return "You need to enter a color and game number!";
@@ -113,10 +182,10 @@ public class Client {
         } catch (Exception e) {
             return "Not a valid game number! Use the 'list' command";
         }
-        var response = server.join(request);
-        var board = new ChessBoardImpl();
-        board.resetBoard();
-        return drawBoard(board, ChessGame.TeamColor.WHITE) + "\n\n\n" + drawBoard(board, ChessGame.TeamColor.BLACK);
+        server.join(request);
+        state = State.INGAME;
+        color = request.getPlayerColor();
+        return "";
     }
 
     private String listGames() throws ResponseException {
@@ -177,7 +246,7 @@ public class Client {
         else{
             permission = Permission.PLAYER;
         }
-        return "You've logged in as " + response.getUsername() + "\n" + help();
+        return "You've logged in as " + response.getUsername();
     }
 
     private String register(String... params) throws ResponseException{
@@ -191,7 +260,7 @@ public class Client {
         var response = server.register(request);
         state = State.LOGGEDIN;
         authToken = response.getToken();
-        return "You've registered as " + response.getUsername() + ". Congrats!\n" + help();
+        return "You've registered as " + response.getUsername() + ". Congrats!";
     }
 
     public String help() {
@@ -202,21 +271,47 @@ public class Client {
                     - quit
                     """;
         }
+        else if(state == State.LOGGEDIN) {
+            return """
+                    - logout
+                    - create <game name>
+                    - list
+                    - join <game ID> <color: WHITE/BLACK>
+                    - observe <game ID>
+                    - quit
+                    """;
+        }
         return """
-                - logout
-                - create <game name>
-                - list
-                - join <game ID> <color: WHITE/BLACK>
-                - observe <game ID>
-                - quit
+                - move <position 1> <position 2>
+                - show <position> (shows the legal moves a chess piece can make)
+                - redraw
+                - leave
+                - resign
                 """;
     }
 
-    private String drawBoard(ChessBoard board, ChessGame.TeamColor color){
+    /**
+     * @param message - the message from the server
+     */
+    @Override
+    public void notify(ServerMessage message) {
+        String notification = switch(message.getServerMessageType()){
+            case LOAD_GAME -> drawBoard(message.getGame(), message.getColor(), null);
+            case ERROR -> EscapeSequences.SET_TEXT_COLOR_RED + message.getErrorMessage();
+            case NOTIFICATION -> EscapeSequences.SET_TEXT_COLOR_BLUE + message.getMessage();
+        };
+        System.out.println(notification);
+        repl.printPrompt();
+    }
+
+    private String drawBoard(GameData game, ChessGame.TeamColor color, ArrayList<ChessPosition> legalPositions){
+        this.gameData = game;
+        var board = game.getChessGame().getBoard();
         var sb = new StringBuilder();
         int num_squares = 0;
 
         //Top row letters
+        sb.append("\n");
         appendLetters(sb, color);
         sb.append("\n");
 
@@ -232,7 +327,12 @@ public class Client {
                 //pieces
                 ChessPosition position = new ChessPositionImpl(row, column);
                 ChessPiece piece = board.getPiece(position);
-                sb.append(num_squares % 2 == 0 ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                if(legalPositions != null && legalPositions.contains(position)){
+                    sb.append(EscapeSequences.SET_BG_COLOR_GREEN);
+                }
+                else{
+                    sb.append(num_squares % 2 == 0 ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                }
                 if(piece == null){
                     sb.append(EscapeSequences.EMPTY);
                     num_squares += 1;
@@ -292,4 +392,6 @@ public class Client {
             case PAWN -> EscapeSequences.BLACK_PAWN;
         });
     }
+
+
 }

@@ -1,3 +1,5 @@
+package server;
+
 import com.google.gson.Gson;
 import daos.DataAccess;
 import dataAccess.DataAccessException;
@@ -13,10 +15,8 @@ import java.util.Map;
  */
 public class ServerMain {
 
-    /**
-     * starts the server and database accessor
-     */
     private DataAccess dataManager;
+    private WebSocketServer wsServer;
     public static void main(String[] args){
         new ServerMain().run();
     }
@@ -28,10 +28,14 @@ public class ServerMain {
             throw new RuntimeException(e);
         }
 
+        wsServer = new WebSocketServer(dataManager);
+
         Spark.port(8080);
 
         // Register a directory for hosting static files
         Spark.externalStaticFileLocation("web");
+
+        Spark.webSocket("/connect", wsServer);
 
         Spark.post("/user", (request, response) -> RegisterHandler.registerRequest(request, dataManager));
 
@@ -48,7 +52,6 @@ public class ServerMain {
         Spark.put("/game", ((request, response) -> JoinGameHandler.JoinGameRequest(request, dataManager)));
 
         Spark.exception(DataAccessException.class, this::errorHandler);
-
     }
 
     public Object errorHandler(DataAccessException e, Request req, Response res){

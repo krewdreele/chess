@@ -6,8 +6,11 @@ import exception.ResponseException;
 import models.Request;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ui.Client;
+import ui.Repl;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -17,11 +20,18 @@ public class ServerFacadeTests {
 
     @BeforeAll
     public static void init() throws ResponseException {
-        server = new ServerFacade("http://localhost:8080");
+        var repl = new Repl("http://localhost:8080");
+        server = new ServerFacade("http://localhost:8080", new Client("http://localhost:8080", repl));
         var req = new Request();
         req.setUsername("mr.ski");
         req.setPassword("9979");
-        token = server.login(req).getToken();
+        req.setEmail("email");
+        try {
+            token = server.login(req).getToken();
+        }
+        catch(Exception e){
+            token = server.register(req).getToken();
+        }
     }
 
     @AfterEach
@@ -132,7 +142,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void goodJoin() throws ResponseException {
+    void goodJoin() throws ResponseException, IOException {
         var request = new Request();
         request.setAuthToken(token);
         request.setGameName("game");

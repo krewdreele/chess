@@ -1,16 +1,21 @@
 package ui;
 
+import chess.*;
+import connect.NotificationHandler;
+import exception.ResponseException;
+import webSocketMessages.serverMessages.ServerMessage;
+
 import java.util.Scanner;
 
 public class Repl {
 
     private final Client client;
-    public Repl(String serverURL){
+    public Repl(String serverURL) throws ResponseException {
         client = new Client(serverURL, this);
     }
 
     public void run() {
-        System.out.println("Welcome to Chess! Sign in or register to begin.");
+        System.out.println("Welcome to Chess! Sign in or register to begin. Type 'help' at any time for more options.");
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -29,12 +34,14 @@ public class Repl {
         System.out.println();
     }
 
-    public void notify(String notification) {
+    public void notifyError(String notification) {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + notification);
     }
 
-    private void printPrompt() {
+    void printPrompt() {
         System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_WHITE + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
+
+
 }
 

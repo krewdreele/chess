@@ -36,18 +36,18 @@ public class ChessGameImpl implements ChessGame{
     @Override
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece piece = board.getPiece(move.getStartPosition());
-        if(piece.getTeamColor() != turn){
-            throw new InvalidMoveException("It is not your turn dummy!");
+        if(piece == null){
+            throw new InvalidMoveException("Invalid move");
+        }
+        else if(piece.getTeamColor() != turn){
+            throw new InvalidMoveException("It's not your turn!");
         }
         else if(!validMoves(move.getStartPosition()).contains(move)){
-            throw new InvalidMoveException("Move leaves King in check!");
+            throw new InvalidMoveException("Invalid move");
         }
-        else{
-            board.movePiece(move);
-            changeTurns();
-        }
+        board.movePiece(move);
+        changeTurns();
     }
-
     private boolean invalidMove(ChessMove move){
         TeamColor color = board.getPiece(move.getStartPosition()).getTeamColor();
         //copy our current board state
