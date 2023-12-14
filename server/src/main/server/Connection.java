@@ -10,7 +10,6 @@ import java.util.Objects;
 
 public class Connection {
     public int gameID;
-
     public ChessGame.TeamColor color;
     public Session session;
 

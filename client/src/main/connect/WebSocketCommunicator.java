@@ -68,10 +68,14 @@ public class WebSocketCommunicator extends Endpoint {
         this.session.getBasicRemote().sendText(builder.toJson(command));
     }
 
-    public void makeMove(String authToken, int gameID, ChessMove move) throws IOException {
+    public void makeMove(String authToken, ChessMove move) throws IOException {
         var command = new UserGameCommand(authToken, UserGameCommand.CommandType.MAKE_MOVE);
         command.setMove(move);
-        command.setGameID(gameID);
+        this.session.getBasicRemote().sendText(builder.toJson(command));
+    }
+
+    public void resign(String token) throws IOException {
+        var command = new UserGameCommand(token, UserGameCommand.CommandType.RESIGN);
         this.session.getBasicRemote().sendText(builder.toJson(command));
     }
 }

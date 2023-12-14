@@ -13,7 +13,7 @@ public class ServerFacade {
     private final HttpCommunicator http;
     private final WebSocketCommunicator ws;
     private final String url;
-    public ServerFacade(String url, NotificationHandler observer) throws ResponseException {
+    public ServerFacade(String url, NotificationHandler observer){
         var builder = new GsonBuilder()
                 .registerTypeAdapter(ChessGame.class,
                         new ChessGameSerialManager())
@@ -57,6 +57,7 @@ public class ServerFacade {
         return http.makeRequest("POST", path, req);
     }
     public void join(Request req) throws ResponseException, IOException {
+        http.makeRequest("PUT", "/game", req);
         ws.makeConnection(url);
         if (req.getPlayerColor() == null) {
             ws.observe(req.getAuthToken(), req.getGameID());
@@ -65,13 +66,15 @@ public class ServerFacade {
         }
     }
 
-    public void leaveGame(String token) throws IOException, ResponseException {
-        ws.makeConnection(url);
+    public void leaveGame(String token) throws IOException {
         ws.leaveGame(token);
     }
 
-    public void makeMove(String token, int gameID, ChessMove move) throws ResponseException, IOException {
-        ws.makeConnection(url);
-        ws.makeMove(token, gameID, move);
+    public void makeMove(String token, ChessMove move) throws IOException {
+        ws.makeMove(token, move);
+    }
+
+    public void resign(String token) throws IOException {
+        ws.resign(token);
     }
 }

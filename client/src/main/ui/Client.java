@@ -11,7 +11,6 @@ import webSocketMessages.serverMessages.ServerMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 public class Client implements NotificationHandler {
     private final ServerFacade server;
@@ -85,11 +84,12 @@ public class Client implements NotificationHandler {
         return drawBoard(gameData, color, legalPositions);
     }
 
-    private String resign() {
+    private String resign() throws IOException {
+        server.resign(authToken);
         return "";
     }
 
-    private String makeMove(String... params) throws ResponseException, InvalidMoveException, IOException {
+    private String makeMove(String... params) throws IOException {
         if(params.length != 2){
             return "Please enter two board positions";
         }
@@ -97,7 +97,7 @@ public class Client implements NotificationHandler {
         ChessPosition start = positionConverter(params[0]);
         ChessPosition end = positionConverter(params[1]);
         var move = new ChessMoveImpl(start, end, null);
-        server.makeMove(authToken, gameData.getGameID(), move);
+        server.makeMove(authToken, move);
         return "";
     }
 
@@ -111,7 +111,7 @@ public class Client implements NotificationHandler {
         return new ChessPositionImpl(row, column);
     }
 
-    private String leaveGame() throws ResponseException, IOException {
+    private String leaveGame() throws IOException {
         state = State.LOGGEDIN;
         server.leaveGame(authToken);
         color = null;
@@ -214,7 +214,7 @@ public class Client implements NotificationHandler {
             throw new ResponseException(400, "bad request");
         }
         request.setGameName(params[0]);
-        var response = server.create(request);
+        server.create(request);
         listGames();
         return "Game created!";
     }

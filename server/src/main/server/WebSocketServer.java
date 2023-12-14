@@ -13,7 +13,6 @@ import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @WebSocket
 public class WebSocketServer {
@@ -47,6 +46,7 @@ public class WebSocketServer {
                 case JOIN_OBSERVER -> joinObserver(session, command);
                 case MAKE_MOVE -> makeMove(command);
                 case LEAVE -> leave(command);
+                case RESIGN -> resign(command);
             }
         }
         catch(DataAccessException | InvalidMoveException e){
@@ -56,14 +56,40 @@ public class WebSocketServer {
         }
     }
 
-    private void leave(UserGameCommand command) throws DataAccessException {
+    private void resign(UserGameCommand command) throws IOException, DataAccessException {
+        var connection = connectionManager.connections.get(command.getAuthString());
+        synchronized (dataManager) {
+            //make sure there is still a valid game going on
+            dataManager.getGameAccess().find(connection.gameID);
+            //remove the game from the database
+            dataManager.getGameAccess().remove(connection.gameID);
+        }
+        //create the resignation message
+        var msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        var color = connection.color;
+        if(color == null){
+            throw new DataAccessException("You're an observer!");
+        }
+        var opponentColor = color == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        msg.setMessage(color + " has resigned... " + opponentColor + " wins!");
+        connectionManager.broadcast(connection.gameID, msg, builder);
+    }
+
+    private void leave(UserGameCommand command) throws DataAccessException, IOException {
+        var gameID = connectionManager.connections.get(command.getAuthString()).gameID;
+        var username = dataManager.getAuthAccess().find(command.getAuthString());
+        var msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        msg.setMessage(username + " left the game");
+        connectionManager.broadcast(gameID, msg, builder);
+
         connectionManager.remove(command.getAuthString());
     }
 
     private void makeMove(UserGameCommand command) throws DataAccessException, InvalidMoveException, IOException {
-        var game = dataManager.getGameAccess().find(command.getGameID()).getChessGame();
+        var connection = connectionManager.connections.get(command.getAuthString());
+        var game = dataManager.getGameAccess().find(connection.gameID).getChessGame();
         var pieceType = game.getBoard().getPiece(command.getMove().getStartPosition()).getPieceType();
-        var color = connectionManager.connections.get(command.getAuthString()).color;
+        var color = connection.color;
 
         if(color == null){
             throw new InvalidMoveException("Can't move pieces as an observer!");
@@ -74,8 +100,8 @@ public class WebSocketServer {
 
         //make move and load board for everyone in the game
         game.makeMove(command.getMove());
-        dataManager.getGameAccess().updateGame(command.getGameID(), game);
-        connectionManager.broadcast(command.getGameID(), loadGameMessage(command.getGameID(), null), builder);
+        dataManager.getGameAccess().updateGame(connection.gameID, game);
+        connectionManager.broadcast(connection.gameID, loadGameMessage(connection.gameID, null), builder);
 
         //notify everyone else of the move
         var notifyMove = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
@@ -90,13 +116,31 @@ public class WebSocketServer {
         if(game.isInCheckmate(opponentColor)){
             var msg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             msg.setMessage(opponentColor + " is in checkmate, " + color + " wins!");
-            connectionManager.broadcast(command.getGameID(), msg, builder);
+            connectionManager.broadcast(connection.gameID, msg, builder);
+
+            dataManager.getGameAccess().remove(connection.gameID);
         }
     }
 
     private void joinPlayer(Session session, UserGameCommand command) throws DataAccessException, IOException {
         var username = dataManager.getAuthAccess().find(command.getAuthString());
-        dataManager.getGameAccess().claimSpot(command.getGameID(), username, command.getColor());
+        var game = dataManager.getGameAccess().find(command.getGameID());
+        if(command.getColor() == ChessGame.TeamColor.WHITE){
+            if(game.getWhiteUsername() == null){
+                throw new DataAccessException("Need to make http request first");
+            }
+            if(!game.getWhiteUsername().equals(username)){
+                throw new DataAccessException("This spot's already taken!");
+            }
+        }
+        else{
+            if(game.getBlackUsername() == null){
+                throw new DataAccessException("Need to make http request first");
+            }
+            if(!game.getBlackUsername().equals(username)) {
+                throw new DataAccessException("This spot's already taken!");
+            }
+        }
 
         connectionManager.add(command.getAuthString(), command.getGameID(), session, command.getColor());
 
