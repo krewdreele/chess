@@ -88,17 +88,20 @@ public class WebSocketServer {
     private void makeMove(UserGameCommand command) throws DataAccessException, InvalidMoveException, IOException {
         var connection = connectionManager.connections.get(command.getAuthString());
         var game = dataManager.getGameAccess().find(connection.gameID).getChessGame();
-        var pieceType = game.getBoard().getPiece(command.getMove().getStartPosition()).getPieceType();
         var color = connection.color;
 
         if(color == null){
             throw new InvalidMoveException("Can't move pieces as an observer!");
+        }
+        if(game.getBoard().getPiece(command.getMove().getStartPosition()) == null){
+            throw new InvalidMoveException("Invalid move");
         }
         if(color != game.getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor()){
             throw new InvalidMoveException("Can't move the other team's pieces!");
         }
 
         //make move and load board for everyone in the game
+        var pieceType = game.getBoard().getPiece(command.getMove().getStartPosition()).getPieceType();
         game.makeMove(command.getMove());
         dataManager.getGameAccess().updateGame(connection.gameID, game);
         connectionManager.broadcast(connection.gameID, loadGameMessage(connection.gameID, null), builder);

@@ -115,7 +115,7 @@ public class Client implements NotificationHandler {
         state = State.LOGGEDIN;
         server.leaveGame(authToken);
         color = null;
-        return "You left the game";
+        return "";
     }
 
     private String redraw() {
@@ -300,7 +300,7 @@ public class Client implements NotificationHandler {
             case ERROR -> EscapeSequences.SET_TEXT_COLOR_RED + message.getErrorMessage();
             case NOTIFICATION -> EscapeSequences.SET_TEXT_COLOR_BLUE + message.getMessage();
         };
-        System.out.println(notification);
+        System.out.print(notification);
         repl.printPrompt();
     }
 
@@ -363,6 +363,7 @@ public class Client implements NotificationHandler {
         }
         //bottom row letters
         appendLetters(sb, color);
+        sb.append("\n");
         return sb.toString();
     }
 
